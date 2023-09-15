@@ -3,7 +3,7 @@
 #  input:    svi-sdi.dta, coverage.xlsx, week-15-administered.xlsx 
 #  output:   none
 #  project:  mivax
-#  author:   sam harper \ 2023-09-14
+#  author:   sam harper \ 2023-09-15
 
 ##### 0 #####
 ##### load libraries
@@ -14,7 +14,7 @@ library(lubridate)
 library(tsibble)
 library(haven)
 library(kableExtra)
-library(gglorenz)
+library(ggpp)
 
 ##### 1 #####
 ##### generate county disadvantage index
@@ -164,6 +164,8 @@ t2 %>%
   footnote(general = "SDI quintiles based on unweighted distribution across counties.")
 
 
+##### 5 #####
+##### Lorenz and Concentration curves
 
 f1 <- vn %>% select(county, doses) %>%
   group_by(county) %>%
@@ -173,7 +175,7 @@ f1 <- vn %>% select(county, doses) %>%
          sdi_rate = tdoses / sdi_county_population * 100)
 
 
-svi_label <- "Least vaccinated 50%\nof counties are 42% of\noverall vaccination rate"
+f1_label <- "Least vaccinated 50%\nof counties account for\n42% of the overall\nvaccination rate"
 
 f1 %>%
   arrange(svi_rate) %>%
@@ -181,31 +183,43 @@ f1 %>%
          cpv = cumsum(svi_rate)/sum(svi_rate)*100) %>%
   ggplot(aes(x = cpc, y = cpv, colour="coverage")) + geom_line() +
   geom_segment(aes(x = 0, y = 0, xend = 100, yend = 100,
-    colour = "equality"), linetype = 'dashed') +
+                   colour = "equality"), linetype = 'dashed') +
   coord_cartesian(expand=FALSE) +
   scale_x_continuous(limits = c(0,100)) +
   scale_y_continuous(limits = c(0,100)) +
   scale_color_manual(values = c("#377eb8", "black")) +
-  theme_bw() +
+  theme_bw() + theme(legend.position = "none") +
+  geom_curve(aes(x = 53, y = 32, xend = 50, yend = 40),
+             curvature = -0.3, arrow = arrow(length = unit(0.02, "npc"))) +
+  annotate("text", label = svi_label, x = 54, y = 30, 
+           size = 5, colour = "#377eb8", hjust=0) +
+  labs(x = "Cumulative Percentage of Counties, Ranked by Vaccine Coverage",
+       y = "Cumulative Percentage of Vaccine Coverage",
+       title = "Lorenz Curve for Relative Inequality by SVI")
+
+
+
+f2_label <- "Least advantaged 50%\nof counties account for\nnearly 50% of the overall\nvaccination rate"
+
+f1 %>%
+  arrange(desc(svi_2020)) %>%
+  mutate(disadv = 1 - svi_2020,
+         cpc = rank(disadv)/length(disadv)*100,
+         cpv = cumsum(svi_rate)/sum(svi_rate)*100) %>%
+  ggplot(aes(x = cpc, y = cpv, colour="coverage")) + geom_line() +
+  geom_segment(aes(x = 0, y = 0, xend = 100, yend = 100,
+                   colour = "equality"), linetype = 'dashed') +
+  coord_cartesian(expand=FALSE) +
+  scale_x_continuous(limits = c(0,100)) +
+  scale_y_continuous(limits = c(0,100)) +
+  scale_color_manual(values = c("#377eb8", "black")) +
+  theme_bw() + theme(legend.position = "none") +
   geom_curve(aes(x = 53, y = 32, xend = 50, yend = 40),
     curvature = -0.3, arrow = arrow(length = unit(0.02, "npc"))) +
-  geom_text_npc(aes(npcx = 0.9, npcy = 0.2, label = svi_label),
-                color = "#377eb8") +
-  labs(x = "Cumulative Percentage of Counties, Ranked by Vaccine Coverage",
-    y = "Cumulative Percentage of Vaccine Coverage",
-    title = "Lorenz Curve for Relative Inequality by SVI")
-
-
-   ggplot(aes(svi_rate)) +
-    stat_lorenz(desc = TRUE) +
-    coord_fixed() +
-    geom_abline(linetype = "dashed") +
-    theme_minimal() +
-    # scale_x_percent() +
-    # scale_y_percent() +
-    # theme_ipsum_rc() +
-    labs(x = "Cumulative Percentage of Counties, Ranked by Vaccine Coverage",
-         y = "Cumulative Percentage of Vaccine Coverage",
-         title = "Inequality Among Counties")
+  annotate("text", label = f2_label, x = 54, y = 30, 
+           size = 5, colour = "#377eb8", hjust=0) +
+  labs(x = "Cumulative Percentage of Counties, Ranked by SVI",
+       y = "Cumulative Percentage of Vaccine Coverage",
+       title = "Concentration Curve for Relative Inequality by SVI")
 
 
