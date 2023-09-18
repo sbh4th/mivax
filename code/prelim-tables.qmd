@@ -5,9 +5,11 @@ date: 2023-09-13
 format: html
 editor: visual
 ---
+
 ## Setup
 
 Let's load the required packages for the analysis:
+
 ```{r setup, message = FALSE, results = FALSE}
 library(here)
 library(tidyverse)
@@ -19,7 +21,9 @@ library(kableExtra)
 ```
 
 ## County Disadvantage
+
 Next let's read in the county-level data containing the SVI and SDI indexes
+
 ```{r dd}
 # read in data
 # get county disadvantage index
@@ -27,7 +31,7 @@ dd <- read_dta(here("data", "svi-sdi.dta"))
 glimpse(dd)
 ```
 
-Next we'll drop everything except the SDI and SVI metrics and population sizes, and create quintiles of each. Note here that this creates quintiles based on the *unweighted* distribution of counties. Weighted quintiles would likely produce a somewhat different distribution, but is still possible. 
+Next we'll drop everything except the SDI and SVI metrics and population sizes, and create quintiles of each. Note here that this creates quintiles based on the *unweighted* distribution of counties. Weighted quintiles would likely produce a somewhat different distribution, but is still possible.
 
 ```{r dq}
 # create quintiles of SVI and SDI scores
@@ -39,6 +43,7 @@ dq <- dd %>% rename_all(tolower) %>%
 ```
 
 Now let's check to make sure that our quintiles contain increasing values of each index:
+
 ```{r quintiles}
 # check quintile values
 dq %>% group_by(sdiq) %>% 
@@ -51,10 +56,12 @@ dq %>% group_by(sviq) %>%
   kbl() %>%
   kable_styling()
 ```
+
 Seems reasonable.
 
 ## Vaccine Data
-Now let's read in the vaccine numerator data. Although data exist for the "Unknown" race this is problematic for matching with denonminators, so end up dropping it. Also restricting to ages 18 and over, but collapsing across those age categories. Could revisit to age-adjust or stratify later, but not sure how important it is for preliminary analysis. 
+
+Now let's read in the vaccine numerator data. Although data exist for the "Unknown" race this is problematic for matching with denonminators, so end up dropping it. Also restricting to ages 18 and over, but collapsing across those age categories. Could revisit to age-adjust or stratify later, but not sure how important it is for preliminary analysis.
 
 ```{r vn, message=FALSE}
 # vaccine numerators
@@ -84,7 +91,7 @@ vns <- vn %>% select(county, raceeth, agegp, doses) %>%
 glimpse(vns)
 ```
 
-Now we need the denominators. This file is a little different since it has population data for each month of the vaccine season, so those populations can't just be summed up. Instead, we average over months for each county/race/age/sex group, then sum them up. 
+Now we need the denominators. This file is a little different since it has population data for each month of the vaccine season, so those populations can't just be summed up. Instead, we average over months for each county/race/age/sex group, then sum them up.
 
 ```{r vd, message=FALSE}
 # vaccine denominators
@@ -137,11 +144,16 @@ vax <- vns %>%
     `4` = "NH Black", `5` = "NH Other", 
     `6` = "NH White"))
 ```
+
 The first 10 rows of the dataset look like...
+
 ```{r vax10, message=F}
 kable(head(vax, n=10), digits=3) %>%
   kable_styling()
 ```
+
+## Race-Ethnic Inequalities
+
 And now we can make the tables by summing up the number of vaccine doses and the population counts for each county deprivation quintile and race-ethnic group.
 
 ```{r t1, message=FALSE}
@@ -165,6 +177,7 @@ t1 %>%
 ```
 
 And by SDI:
+
 ```{r t2, message=FALSE}
 t2 <- vax %>% filter(race!=5) %>%
   group_by(racef,sdiq) %>%
@@ -185,3 +198,65 @@ t2 %>%
   footnote(general = "SDI quintiles based on unweighted distribution across counties.")
 ```
 
+## Inequalities by SVI or SDI
+To calculate inequalities across the entire range of measures of disadvantage like SVI or SDI (at either the county or the tract level), we can take two approaches. One is 'univariate' in the sense that we want to estimate how unequal the distribution of vaccine coverage is across counties (or tracts). To visualize what this means, we can create a Lorenz curve that first ranks all counties (or tracts) by their vaccine coverage rate (lowest to highest), then plots on the x-axis the county's place in the cumulative distribution of counties, ranked by vaccine coverage, and on the y-axis the cumulative contribution to the overall vaccination rate. Lorenz curves can be either on the absolute or relative scale, but typically the relative scale is more common, as it leads to one of the most common measures of univariate inequality, the Gini coefficient.
+
+Below we can see the Lorenz curve for counties, ranked by their vaccine coverage rate:
+```{r f1}
+f1 <- vn %>% select(county, doses) %>%
+  group_by(county) %>%
+  summarise(tdoses = sum(doses)) %>%
+  right_join(dq, by = join_by(county)) %>%
+  mutate(svi_rate = tdoses / svi_totpop * 100,
+         sdi_rate = tdoses / sdi_county_population * 100)
+
+
+f1_label <- "Least vaccinated 50%\nof counties account for\n42% of the overall\nvaccination rate"
+
+f1 %>%
+  arrange(svi_rate) %>%
+  mutate(cpc = rank(svi_rate)/length(svi_rate)*100,
+         cpv = cumsum(svi_rate)/sum(svi_rate)*100) %>%
+  ggplot(aes(x = cpc, y = cpv, colour="coverage")) + geom_line() +
+  geom_segment(aes(x = 0, y = 0, xend = 100, yend = 100,
+                   colour = "equality"), linetype = 'dashed') +
+  coord_cartesian(expand=FALSE) +
+  scale_x_continuous(limits = c(0,100)) +
+  scale_y_continuous(limits = c(0,100)) +
+  scale_color_manual(values = c("#377eb8", "black")) +
+  theme_bw() + theme(legend.position = "none") +
+  geom_curve(aes(x = 53, y = 32, xend = 50, yend = 40),
+             curvature = -0.3, arrow = arrow(length = unit(0.02, "npc"))) +
+  annotate("text", label = f1_label, x = 54, y = 30, 
+           size = 5, colour = "#377eb8", hjust=0) +
+  labs(x = "Cumulative Percentage of Counties, Ranked by Vaccine Coverage",
+       y = "Cumulative Percentage of Vaccine Coverage",
+       title = "Lorenz Curve for Relative Inequality by SVI")
+```
+
+As noted, the Lorenz curve above measures inequality in a univariate way, it does not say anything about whether, for example, more *disadvantaged* counties have higher or lower vaccination coverate. To calculate a **bivariate** measure of inequality, we can use the Concentration index. Now instead of ranking counties based on their vaccination rate, we rank counties on the basis of disadvantage (SVI or SDI). We can then plot a Concentration curve, that puts disadvantage rank on the x-axis and each counties proportional contribution to the overall vaccination rate on the y-axis.
+
+```{r f2}
+f2_label <- "Least advantaged 50%\nof counties account for\nnearly 50% of the overall\nvaccination rate"
+
+f1 %>%
+  arrange(desc(svi_2020)) %>%
+  mutate(disadv = 1 - svi_2020,
+         cpc = rank(disadv)/length(disadv)*100,
+         cpv = cumsum(svi_rate)/sum(svi_rate)*100) %>%
+  ggplot(aes(x = cpc, y = cpv, colour="coverage")) + geom_line() +
+  geom_segment(aes(x = 0, y = 0, xend = 100, yend = 100,
+                   colour = "equality"), linetype = 'dashed') +
+  coord_cartesian(expand=FALSE) +
+  scale_x_continuous(limits = c(0,100)) +
+  scale_y_continuous(limits = c(0,100)) +
+  scale_color_manual(values = c("#377eb8", "black")) +
+  theme_bw() + theme(legend.position = "none") +
+  geom_curve(aes(x = 53, y = 32, xend = 50, yend = 40),
+    curvature = -0.3, arrow = arrow(length = unit(0.02, "npc"))) +
+  annotate("text", label = f2_label, x = 54, y = 30, 
+           size = 5, colour = "#377eb8", hjust=0) +
+  labs(x = "Cumulative Percentage of Counties, Ranked by SVI",
+       y = "Cumulative Percentage of Vaccine Coverage",
+       title = "Concentration Curve for Relative Inequality by SVI")
+```
