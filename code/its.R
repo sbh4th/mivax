@@ -7,6 +7,8 @@ library(haven)
 library(cowplot)
 library(fpp2)
 library(tsModel)
+library(modelr)
+library(tsModel)
 
 # read in data
 d <- read_excel("data/past-season.xlsx",
@@ -58,24 +60,95 @@ model3 <- glm(ndoses ~ post + time + harmonic(week,6,52),
               family=quasipoisson, data=weekly)
 summary(model3)
 
+res3 <- residuals(model3, type="deviance")
+ggtsdisplay(res3)
+
 grid <- data.frame(x = seq(0, 1, length = length(weekly)))
 grid %>% add_predictions(m1)
 
-weekly %>% add_predictions(model3) %>%
-  ggplot(aes(x = weekyr, y = pred)) +
-  geom_line() 
-+ 
-  # geom_line(aes(x = weekyr, y = pred))
+t <- weekly %>% add_predictions(model4) %>%
+  mutate(pdoses = exp(pred)) 
+%>%
+  ggplot(aes(x = weekyr, y = ndoses)) +
+  geom_point() +
+  geom_line(aes(x = weekyr, y = pdoses))
+
+model4 <- glm(ndoses ~ post + time + harmonic(week,3,52), 
+              family=quasipoisson, data=weekly)
+summary(model4)
+
+res4 <- residuals(model4, type="deviance")
+
+library(brms)
+library(cmdstanr)
+
+model_br <- brm(ndoses ~ time + post + s(week),
+                data = weekly,
+                family = poisson(),
+                sample_prior = 'yes',
+                chains=4, cores=4,
+                backend = 'cmdstanr')
+
+# Geoms for base plot
+ggplot_its_base <- function(data, n_years) {
+  ggplot(data, aes(x = months_elapsed)) +
+    ylab('Counts (n)') +
+    xlab('Month/Seasons elapsed') +
+    scale_x_continuous(breaks = seq(1, n_years*12, by = 6),
+                       labels = function(x) {paste0('Season ', ceiling(x/12), ' \n(', data$months[x],')')}) + # Start at Sept
+    theme_minimal() + 
+    theme(legend.position = 'top', 
+          legend.title = element_blank(), 
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          axis.text.x = element_text(vjust = 5))
+  
+}
+
+# Additional geoms for predictions
+ggplot_its_base <- function(data) {
+  ggplot(data, aes(x = time)) +
+    ylab('Counts (n)') +
+    xlab('Weeks elapsed') +
+    scale_x_continuous(breaks = seq(1, 157, by = 36)) +
+    theme_minimal() + 
+    theme(legend.position = 'top', 
+          legend.title = element_blank(), 
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          axis.text.x = element_text(vjust = 5))
+  
+}
+
+ggplot_its_pred <- function(plot) {
+  list(
+  geom_ribbon(aes(ymin = `Q5`, ymax = `Q95`), fill = 'grey90'),
+  geom_point(aes(y = Estimate, color = 'Predictions')),
+  geom_line(aes(y = Estimate, color = 'Predictions')),
+  geom_point(aes(y = ndoses, color = 'Actual')),
+  geom_segment(aes(xend = time, y = ndoses, yend  = Estimate), 
+               linetype = 'dotted', color = 'grey20'),
+  scale_color_manual(values = c('Predictions' = 'steelblue2', 'Actual' = 'forestgreen'))
+  )
+}
+
+plotB <- as.data.frame(predict(model_br, probs = c(0.05, 0.95))) |> 
+  cbind(weekly) |>
+  ggplot(aes(x = time)) +
+  ggplot_its_pred()
 
 
-library(its2es)
-data <- Israel_mortality
-form <- as.formula("percent ~ time")
-intervention_start_ind <- which(data$Year==2020 & data$Month>2| data$Year==2021)[1]
-form <- as.formula("monthly_total ~ time")
-fit <- its_poisson_fourier(data=data,form=form, 
-  offset_name = "monthly_est", time_name = "time",
-  intervention_start_ind=intervention_start_ind, 
-  over_dispersion=TRUE, freq=12,
-  impact_model = "full",counterfactual = TRUE, keep_significant_fourier=FALSE)
+## simulated data
+tib <- tibble(
+  weeks = rep(seq(from = 1, to = 52, by =1), 6),
+  year = rep(2017:2022, each = 52),
+  time = seq(from = 1, to=312, by = 1),
+  post = if_else(year >= 2020, 1, 0),
+  tsince = if_else(post==1, time - 157, 0),
+  pop100 = 90000 + (900000 * 0.0005 * time)
+  ) %>%
+  mutate(
+    lambda = 10 + (0.02 * time) + (0.2 * post) +
+    (0 * post * tsince),
+    doses = rpois(312, exp(lambda)))
 
