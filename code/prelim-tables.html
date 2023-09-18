@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sam Harper">
-<meta name="dcterms.date" content="2023-09-13">
+<meta name="dcterms.date" content="2023-09-18">
 
 <title>Preliminary tables</title>
 <style>
@@ -101,7 +101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 13, 2023</p>
+      <p class="date">September 18, 2023</p>
     </div>
   </div>
   
@@ -115,23 +115,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
 <p>Let’s load the required packages for the analysis:</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tsibble)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rineq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
 <section id="county-disadvantage" class="level2">
 <h2 class="anchored" data-anchor-id="county-disadvantage">County Disadvantage</h2>
 <p>Next let’s read in the county-level data containing the SVI and SDI indexes</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read in data</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># get county disadvantage index</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"svi-sdi.dta"</span>))</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(dd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 83
 Columns: 13
@@ -152,20 +159,26 @@ $ SDI_2020_01           &lt;dbl&gt; 0.42, 0.22, 0.18, 0.33, 0.14, 0.49, 0.49, 0.
 </div>
 <p>Next we’ll drop everything except the SDI and SVI metrics and population sizes, and create quintiles of each. Note here that this creates quintiles based on the <em>unweighted</em> distribution of counties. Weighted quintiles would likely produce a somewhat different distribution, but is still possible.</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create quintiles of SVI and SDI scores</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>dq <span class="ot">&lt;-</span> dd <span class="sc">%&gt;%</span> <span class="fu">rename_all</span>(tolower) <span class="sc">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(county, svi_totpop, svi_2020, </span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>         sdi_county_population, sdi_2020) <span class="sc">%&gt;%</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sdiq =</span> <span class="fu">ntile</span>(sdi_2020, <span class="dv">5</span>),</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">sviq =</span> <span class="fu">ntile</span>(svi_2020, <span class="dv">5</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Now let’s check to make sure that our quintiles contain increasing values of each index:</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check quintile values</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dq <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(sdiq) <span class="sc">%&gt;%</span> </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">msdi =</span> <span class="fu">mean</span>(sdi_2020)) <span class="sc">%&gt;%</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -200,10 +213,13 @@ $ SDI_2020_01           &lt;dbl&gt; 0.42, 0.22, 0.18, 0.33, 0.14, 0.49, 0.49, 0.
 
 
 </div>
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dq <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(sviq) <span class="sc">%&gt;%</span> </span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">msvi =</span> <span class="fu">mean</span>(svi_2020))<span class="sc">%&gt;%</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -245,6 +261,8 @@ $ SDI_2020_01           &lt;dbl&gt; 0.42, 0.22, 0.18, 0.33, 0.14, 0.49, 0.49, 0.
 <h2 class="anchored" data-anchor-id="vaccine-data">Vaccine Data</h2>
 <p>Now let’s read in the vaccine numerator data. Although data exist for the “Unknown” race this is problematic for matching with denonminators, so end up dropping it. Also restricting to ages 18 and over, but collapsing across those age categories. Could revisit to age-adjust or stratify later, but not sure how important it is for preliminary analysis.</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># vaccine numerators</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>vn <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"week-15-administered.xlsx"</span>), </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"county"</span>, <span class="st">"lhd"</span>, <span class="st">"raceeth"</span>, <span class="st">"agegp"</span>,</span>
@@ -270,6 +288,7 @@ $ SDI_2020_01           &lt;dbl&gt; 0.42, 0.22, 0.18, 0.33, 0.14, 0.49, 0.49, 0.
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">doses =</span> <span class="fu">sum</span>(doses))</span>
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(vns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 507
 Columns: 3
@@ -281,6 +300,8 @@ $ doses  &lt;dbl&gt; 36, 11, 5, 8, 180, 2415, 36, 47, 4, 12, 77, 1356, 977, 175,
 </div>
 <p>Now we need the denominators. This file is a little different since it has population data for each month of the vaccine season, so those populations can’t just be summed up. Instead, we average over months for each county/race/age/sex group, then sum them up.</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># vaccine denominators</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>vd <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"coverage.xlsx"</span>),</span>
@@ -315,6 +336,7 @@ $ doses  &lt;dbl&gt; 36, 11, 5, 8, 180, 2415, 36, 47, 4, 12, 77, 1356, 977, 175,
 <span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">pop =</span> <span class="fu">sum</span>(mp))</span>
 <span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(vds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 501
 Columns: 3
@@ -326,6 +348,8 @@ $ pop    &lt;dbl&gt; 115.000, 52.000, 23.000, 35.999, 84.332, 8736.352, 111.000,
 </div>
 <p>Now we merge the numerators, denominators, and the county disadvantage indexes to get a dataset we can use to generate summary tables of vaccine coverage by race-ethnicity and disadvantage index.</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># combine vaccine doses and population by county and race</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>vax <span class="ot">&lt;-</span> vns <span class="sc">%&gt;%</span> </span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(vds, <span class="at">by =</span> <span class="fu">join_by</span>(county, race)) <span class="sc">%&gt;%</span></span>
@@ -336,11 +360,15 @@ $ pop    &lt;dbl&gt; 115.000, 52.000, 23.000, 35.999, 84.332, 8736.352, 111.000,
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">2</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"NH AI/AN"</span>, <span class="st">`</span><span class="at">3</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"NH API"</span>, </span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">4</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"NH Black"</span>, <span class="st">`</span><span class="at">5</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"NH Other"</span>, </span>
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">6</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"NH White"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>The first 10 rows of the dataset look like…</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(vax, <span class="at">n=</span><span class="dv">10</span>), <span class="at">digits=</span><span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -500,6 +528,8 @@ $ pop    &lt;dbl&gt; 115.000, 52.000, 23.000, 35.999, 84.332, 8736.352, 111.000,
 <h2 class="anchored" data-anchor-id="race-ethnic-inequalities">Race-Ethnic Inequalities</h2>
 <p>And now we can make the tables by summing up the number of vaccine doses and the population counts for each county deprivation quintile and race-ethnic group.</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> vax <span class="sc">%&gt;%</span> <span class="fu">filter</span>(race<span class="sc">!=</span><span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(racef,sviq) <span class="sc">%&gt;%</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">doses =</span> <span class="fu">sum</span>(doses), </span>
@@ -516,7 +546,9 @@ $ pop    &lt;dbl&gt; 115.000, 52.000, 23.000, 35.999, 84.332, 8736.352, 111.000,
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"Q1"</span>, <span class="st">"Q2"</span>, <span class="st">"Q3"</span>, <span class="st">"Q4"</span>, <span class="st">"Q5"</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">" "</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="st">"SVI Quintile (1=lowest)"</span> <span class="ot">=</span> <span class="dv">5</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">html_font =</span> <span class="st">"Helvetica"</span>, <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">footnote</span>(<span class="at">general =</span> <span class="st">"SVI quintiles based on unweighted distribution across counties."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">footnote</span>(<span class="st">"SVI quintiles based on unweighted distribution across counties."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="lightable-classic table table-sm table-striped small" data-quarto-postprocess="true">
 <caption>Vaccine coverage by race-ethnicity and SVI</caption>
@@ -611,6 +643,8 @@ SVI Quintile (1=lowest)
 </div>
 <p>And by SDI:</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> vax <span class="sc">%&gt;%</span> <span class="fu">filter</span>(race<span class="sc">!=</span><span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(racef,sdiq) <span class="sc">%&gt;%</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">doses =</span> <span class="fu">sum</span>(doses), </span>
@@ -626,8 +660,9 @@ SVI Quintile (1=lowest)
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Vaccine coverage by race-ethnicity and SDI"</span>,</span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"Q1"</span>, <span class="st">"Q2"</span>, <span class="st">"Q3"</span>, <span class="st">"Q4"</span>, <span class="st">"Q5"</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">" "</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="st">"SDI Quintile (1=lowest)"</span> <span class="ot">=</span> <span class="dv">5</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">html_font =</span> <span class="st">"Helvetica"</span>, <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">html_font =</span> <span class="st">"Helvetica"</span>, <span class="at">full_width =</span> T) <span class="sc">%&gt;%</span></span>
 <span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">footnote</span>(<span class="at">general =</span> <span class="st">"SDI quintiles based on unweighted distribution across counties."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="lightable-classic table table-sm table-striped small" data-quarto-postprocess="true">
 <caption>Vaccine coverage by race-ethnicity and SDI</caption>
@@ -726,6 +761,8 @@ SDI Quintile (1=lowest)
 <p>To calculate inequalities across the entire range of measures of disadvantage like SVI or SDI (at either the county or the tract level), we can take two approaches. One is ‘univariate’ in the sense that we want to estimate how unequal the distribution of vaccine coverage is across counties (or tracts). To visualize what this means, we can create a Lorenz curve that first ranks all counties (or tracts) by their vaccine coverage rate (lowest to highest), then plots on the x-axis the county’s place in the cumulative distribution of counties, ranked by vaccine coverage, and on the y-axis the cumulative contribution to the overall vaccination rate. Lorenz curves can be either on the absolute or relative scale, but typically the relative scale is more common, as it leads to one of the most common measures of univariate inequality, the Gini coefficient.</p>
 <p>Below we can see the Lorenz curve for counties, ranked by their vaccine coverage rate:</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>f1 <span class="ot">&lt;-</span> vn <span class="sc">%&gt;%</span> <span class="fu">select</span>(county, doses) <span class="sc">%&gt;%</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(county) <span class="sc">%&gt;%</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">tdoses =</span> <span class="fu">sum</span>(doses)) <span class="sc">%&gt;%</span></span>
@@ -755,12 +792,15 @@ SDI Quintile (1=lowest)
 <span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Cumulative Percentage of Counties, Ranked by Vaccine Coverage"</span>,</span>
 <span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Cumulative Percentage of Vaccine Coverage"</span>,</span>
 <span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Lorenz Curve for Relative Inequality by SVI"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="prelim-tables_files/figure-html/f1-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>As noted, the Lorenz curve above measures inequality in a univariate way, it does not say anything about whether, for example, more <em>disadvantaged</em> counties have higher or lower vaccination coverate. To calculate a <strong>bivariate</strong> measure of inequality, we can use the Concentration index. Now instead of ranking counties based on their vaccination rate, we rank counties on the basis of disadvantage (SVI or SDI). We can then plot a Concentration curve, that puts disadvantage rank on the x-axis and each counties proportional contribution to the overall vaccination rate on the y-axis.</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>f2_label <span class="ot">&lt;-</span> <span class="st">"Least advantaged 50%</span><span class="sc">\n</span><span class="st">of counties account for</span><span class="sc">\n</span><span class="st">nearly 50% of the overall</span><span class="sc">\n</span><span class="st">vaccination rate"</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>f1 <span class="sc">%&gt;%</span></span>
@@ -783,10 +823,120 @@ SDI Quintile (1=lowest)
 <span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Cumulative Percentage of Counties, Ranked by SVI"</span>,</span>
 <span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Cumulative Percentage of Vaccine Coverage"</span>,</span>
 <span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Concentration Curve for Relative Inequality by SVI"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="prelim-tables_files/figure-html/f2-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>Both the Gini coefficient and the Concentration Index can be derived from these respective curves.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>svi_gini <span class="ot">&lt;-</span> <span class="fu">ci</span>(<span class="at">ineqvar =</span> f1<span class="sc">$</span>svi_rate, </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">outcome=</span>f1<span class="sc">$</span>svi_rate, <span class="at">method =</span> <span class="st">"direct"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>svi_conc <span class="ot">&lt;-</span> <span class="fu">ci</span>(<span class="at">ineqvar =</span> f1<span class="sc">$</span>svi_2020, </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">outcome=</span>f1<span class="sc">$</span>svi_rate, <span class="at">method =</span> <span class="st">"direct"</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>t3 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">gest =</span> svi_gini<span class="sc">$</span>concentration_index) <span class="sc">%&gt;%</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">gll =</span> svi_gini<span class="sc">$</span>concentration_index </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(svi_gini<span class="sc">$</span>variance), </span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">gul =</span> svi_gini<span class="sc">$</span>concentration_index </span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>      <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(svi_gini<span class="sc">$</span>variance),</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">cest =</span> svi_conc<span class="sc">$</span>concentration_index,</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">cll =</span> svi_conc<span class="sc">$</span>concentration_index </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(svi_conc<span class="sc">$</span>variance), </span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">cul =</span> svi_conc<span class="sc">$</span>concentration_index </span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>      <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(svi_conc<span class="sc">$</span>variance))</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>t3 <span class="sc">%&gt;%</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">digits=</span><span class="dv">2</span>, <span class="at">escape =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Vaccine coverage inequality across counties"</span>,</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Est"</span>, <span class="st">"95% LL"</span>, <span class="st">"95% UL"</span>, </span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Est"</span>, <span class="st">"95% LL"</span>, <span class="st">"95% UL"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">"Gini coefficient"</span> <span class="ot">=</span> <span class="dv">3</span>,</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Concentration index"</span> <span class="ot">=</span> <span class="dv">3</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">html_font =</span> <span class="st">"Helvetica"</span>, <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">footnote</span>(<span class="at">general =</span> <span class="st">"Estimates based on unweighted counties."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="lightable-classic table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Vaccine coverage inequality across counties</caption>
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Gini coefficient
+</div></th>
+<th colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Concentration index
+</div></th>
+</tr>
+<tr class="odd">
+<th style="text-align: right;" data-quarto-table-cell-role="th">Est</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">95% LL</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">95% UL</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Est</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">95% LL</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">95% UL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">-0.01</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: right; padding: 0;"><span style="font-style: italic;">Note: </span></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: right; padding: 0;"><sup></sup> Estimates based on unweighted counties.</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tfoot>
+
+</table>
+
+
+</div>
+</div>
+<p>One challenge with these indices of inequality is interpretation. The Gini coefficient, as a measure of univariate inequality, is generally easier to interpret. Since the Gini is the average value of differences in vaccine rates across all possible pairs of counties, its interpretation is the expected absolute gap between county vaccination rates relative to the average rate in the population. The Concentration index does not have a straightforward interpretation, so here the issue would be more like understanding how much it has changed from a benchmark at the beginning of our observation period.</p>
+<p>One thing to note here is that, although there is certainly inequality in the distribution of vaccine coverage among counties, there appears to be little correlation between the value of SVI and a counties vaccination rate. This is evident from the fact that the Concentration curve for SVI is nearly overlapping with the ‘line of equality’ on the graph. You can see the weak correlation more clear if we just plot vaccination rates against SVI:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>f1 <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> svi_2020, <span class="at">y =</span> svi_rate)) <span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_smooth</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using method = 'loess' and formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="prelim-tables_files/figure-html/corr-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Counties with the highest SVI have moderately lower values of vaccination, but it is not dramatic.</p>
 </section>
 
 </main>

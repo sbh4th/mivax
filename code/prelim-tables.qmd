@@ -1,9 +1,10 @@
 ---
 title: "Preliminary tables"
 author: Sam Harper
-date: 2023-09-13
+date: today
 format: html
-editor: visual
+editor: source
+code-fold: true
 ---
 
 ## Setup
@@ -18,6 +19,7 @@ library(lubridate)
 library(tsibble)
 library(haven)
 library(kableExtra)
+library(rineq)
 ```
 
 ## County Disadvantage
@@ -173,7 +175,8 @@ t1 %>%
     col.names = c("", "Q1", "Q2", "Q3", "Q4", "Q5")) %>%
   add_header_above(c(" " = 1, "SVI Quintile (1=lowest)" = 5)) %>%
   kable_classic(html_font = "Helvetica", full_width = F) %>%
-  footnote(general = "SVI quintiles based on unweighted distribution across counties.")
+  kable_styling() %>%
+  footnote("SVI quintiles based on unweighted distribution across counties.")
 ```
 
 And by SDI:
@@ -194,7 +197,7 @@ t2 %>%
     caption = "Vaccine coverage by race-ethnicity and SDI",
     col.names = c("", "Q1", "Q2", "Q3", "Q4", "Q5")) %>%
   add_header_above(c(" " = 1, "SDI Quintile (1=lowest)" = 5)) %>%
-  kable_classic(html_font = "Helvetica", full_width = F) %>%
+  kable_classic(html_font = "Helvetica", full_width = T) %>%
   footnote(general = "SDI quintiles based on unweighted distribution across counties.")
 ```
 
@@ -260,3 +263,44 @@ f1 %>%
        y = "Cumulative Percentage of Vaccine Coverage",
        title = "Concentration Curve for Relative Inequality by SVI")
 ```
+Both the Gini coefficient and the Concentration Index can be derived from these respective curves. 
+```{r indexes}
+svi_gini <- ci(ineqvar = f1$svi_rate, 
+               outcome=f1$svi_rate, method = "direct")
+svi_conc <- ci(ineqvar = f1$svi_2020, 
+               outcome=f1$svi_rate, method = "direct")
+
+t3 <- tibble(gest = svi_gini$concentration_index) %>%
+  mutate(
+    gll = svi_gini$concentration_index 
+      - 1.96 * sqrt(svi_gini$variance), 
+    gul = svi_gini$concentration_index 
+      + 1.96 * sqrt(svi_gini$variance),
+    cest = svi_conc$concentration_index,
+    cll = svi_conc$concentration_index 
+      - 1.96 * sqrt(svi_conc$variance), 
+    cul = svi_conc$concentration_index 
+      + 1.96 * sqrt(svi_conc$variance))
+
+t3 %>%
+  kbl(digits=2, escape = FALSE,
+    caption = "Vaccine coverage inequality across counties",
+    col.names = c("Est", "95% LL", "95% UL", 
+      "Est", "95% LL", "95% UL")) %>%
+  add_header_above(c("Gini coefficient" = 3,
+    "Concentration index" = 3)) %>%
+  kable_classic(html_font = "Helvetica", full_width = F) %>%
+  footnote(general = "Estimates based on unweighted counties.")
+
+```
+
+One challenge with these indices of inequality is interpretation. The Gini coefficient, as a measure of univariate inequality, is generally easier to interpret. Since the Gini is the average value of differences in vaccine rates across all possible pairs of counties, its interpretation is the expected absolute gap between county vaccination rates relative to the average rate in the population. The Concentration index does not have a straightforward interpretation, so here the issue would be more like understanding how much it has changed from a benchmark at the beginning of our observation period.
+
+One thing to note here is that, although there is certainly inequality in the distribution of vaccine coverage among counties, there appears to be little correlation between the value of SVI and a counties vaccination rate. This is evident from the fact that the Concentration curve for SVI is nearly overlapping with the 'line of equality' on the graph. You can see the weak correlation more clear if we just plot vaccination rates against SVI:
+```{r corr, message=FALSE}
+f1 %>% ggplot(aes(x = svi_2020, y = svi_rate)) +
+  geom_point() + geom_smooth() +
+  theme_bw() + labs(y = "Vaccination rate in 2022-2023",
+    x = "SVI value in 2020")
+```
+Counties with the highest SVI have moderately lower values of vaccination, but it is not dramatic. 

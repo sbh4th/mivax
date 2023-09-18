@@ -223,3 +223,9 @@ f1 %>%
        title = "Concentration Curve for Relative Inequality by SVI")
 
 
+t <- f1 %>%
+  arrange(desc(svi_2020)) %>%
+  mutate(disadv = 1 - svi_2020,
+  ppop = 1/length(disadv),
+  ridit = (cumsum(ppop) - 0.5 * ppop)/sum(ppop))
+  
