@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sam Harper">
-<meta name="dcterms.date" content="2023-09-18">
+<meta name="dcterms.date" content="2023-09-19">
 
 <title>Preliminary tables</title>
 <style>
@@ -101,7 +101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 18, 2023</p>
+      <p class="date">September 19, 2023</p>
     </div>
   </div>
   
@@ -927,16 +927,38 @@ Concentration index
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>f1 <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> svi_2020, <span class="at">y =</span> svi_rate)) <span class="sc">+</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_smooth</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Vaccination rate in 2022-2023"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"SVI value in 2020"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stderr">
-<pre><code>`geom_smooth()` using method = 'loess' and formula = 'y ~ x'</code></pre>
-</div>
 <div class="cell-output-display">
 <p><img src="prelim-tables_files/figure-html/corr-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Counties with the highest SVI have moderately lower values of vaccination, but it is not dramatic.</p>
+<p>Another potential option for estimating inequalities is the Slope Index of Inequality (SII) and its relative analogue, the Relative Index of Inequality (RII). These are also, like the Concentration Index, rank-based measures of inequality that capture the strength of the association between deprivation and health outcomes. These are regression-based measures that are derived from regressing the outcome variable on the ridit score (i.e.&nbsp;the rank of each county in the cumulative distribution of SVI or SDI). Because the ridit score ranges from 0 to 1, it has a straightforward regression-based interpretation: the coefficient on the rank variable expresses the average change in the outcome for a 1-unit change in the ridit score, which is moving from the bottom to the top of the cumulative distribution of disadvantage.</p>
+<p>The basic plot can be seen below:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> f1 <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(svi_2020)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">disadv =</span> <span class="dv">1</span> <span class="sc">-</span> svi_2020,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ppop =</span> <span class="dv">1</span><span class="sc">/</span><span class="fu">length</span>(disadv),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ridit =</span> (<span class="fu">cumsum</span>(ppop) <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> ppop)<span class="sc">/</span><span class="fu">sum</span>(ppop)) </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>t2 <span class="sc">%&gt;%</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ridit, <span class="at">y =</span> svi_rate)) <span class="sc">+</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method=</span>lm , <span class="at">color=</span><span class="st">"#377eb8"</span>, <span class="at">se=</span>T) <span class="sc">+</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Position in cumulative distribution of SVI"</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Vaccination rate"</span>) <span class="sc">+</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="prelim-tables_files/figure-html/sii-plot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 
 </main>

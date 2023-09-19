@@ -304,3 +304,25 @@ f1 %>% ggplot(aes(x = svi_2020, y = svi_rate)) +
     x = "SVI value in 2020")
 ```
 Counties with the highest SVI have moderately lower values of vaccination, but it is not dramatic. 
+
+Another potential option for estimating inequalities is the Slope Index of Inequality (SII) and its relative analogue, the Relative Index of Inequality (RII). These are also, like the Concentration Index, rank-based measures of inequality that capture the strength of the association between deprivation and health outcomes. These are regression-based measures that are derived from regressing the outcome variable on the ridit score (i.e. the rank of each county in the cumulative distribution of SVI or SDI). Because the ridit score ranges from 0 to 1, it has a straightforward regression-based interpretation: the coefficient on the rank variable expresses the average change in the outcome for a 1-unit change in the ridit score, which is moving from the bottom to the top of the cumulative distribution of disadvantage. 
+
+The basic plot can be seen below:
+
+```{r sii-plot, message = F}
+
+t2 <- f1 %>%
+  arrange(desc(svi_2020)) %>%
+  mutate(disadv = 1 - svi_2020,
+  ppop = 1/length(disadv),
+  ridit = (cumsum(ppop) - 0.5 * ppop)/sum(ppop)) 
+
+t2 %>%
+  ggplot(aes(x = ridit, y = svi_rate)) +
+    geom_point() + 
+    geom_smooth(method=lm , color="#377eb8", se=T) +
+  labs(x = "Position in cumulative distribution of SVI",
+       y = "Vaccination rate") +
+  theme_bw()
+```
+

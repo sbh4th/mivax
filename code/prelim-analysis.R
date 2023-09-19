@@ -3,7 +3,7 @@
 #  input:    svi-sdi.dta, coverage.xlsx, week-15-administered.xlsx 
 #  output:   none
 #  project:  mivax
-#  author:   sam harper \ 2023-09-15
+#  author:   sam harper \ 2023-09-19
 
 ##### 0 #####
 ##### load libraries
@@ -15,6 +15,7 @@ library(tsibble)
 library(haven)
 library(kableExtra)
 library(ggpp)
+library(marginaleffects)
 
 ##### 1 #####
 ##### generate county disadvantage index
@@ -65,7 +66,7 @@ vns <- vn %>% select(county, raceeth, agegp, doses) %>%
   
   # limit to adults
   filter(age>=4 & race<7) %>% drop_na() %>%
-  group_by(county, race) %>%
+  group_by(county, age, race) %>%
   summarise(doses = sum(doses))
 
 
@@ -99,7 +100,7 @@ vds <- vd %>%
   
   # limit to adults
   filter(age>=4 & race<7) %>% drop_na() %>%
-  group_by(county, race) %>%
+  group_by(county, age, race) %>%
   summarise(pop = sum(mp))
   
 
@@ -108,14 +109,19 @@ vds <- vd %>%
 
 # combine vaccine doses and population by county and race
 vax <- vns %>% 
-  left_join(vds, by = join_by(county, race)) %>%
+  left_join(vds, by = join_by(county, age, race)) %>%
 
 # now combine with county deprivation indices
   inner_join(dq, by = join_by(county)) %>%
+# create race as factor
   mutate(racef = recode_factor(race, `1` = "Hispanic",
     `2` = "NH AI/AN", `3` = "NH API", 
     `4` = "NH Black", `5` = "NH Other", 
-    `6` = "NH White"))
+    `6` = "NH White"),
+# create age as factor
+  agef = recode_factor(age, `4` = "18-24 years",
+    `5` = "25-49 years", `6` = "50-64 years",
+    `7` = "65+ years"))
 
 # now collapse to calculate vaccine rates
 # by race-ethnicity and deprivation
@@ -135,6 +141,15 @@ t1 <- vax %>% filter(race!=5) %>%
   
   pivot_wider(names_from = sviq, names_prefix = "SVI",
               values_from = rate)
+
+t1_test <- vax %>% filter(race!=5) %>%
+  group_by(racef, agef, sviq) %>%
+  summarise(doses = sum(doses),
+            pop = sum(pop)) %>%
+  mutate(pop100 = pop / 100)
+
+t1c <- glm(doses ~ racef * sviq, data = t1_test,
+  family="poisson", offset = log(pop100))  
 
 t1 %>%
   kbl(digits=1, escape = FALSE,
@@ -183,16 +198,16 @@ f1 %>%
          cpv = cumsum(svi_rate)/sum(svi_rate)*100) %>%
   ggplot(aes(x = cpc, y = cpv, colour="coverage")) + geom_line() +
   geom_segment(aes(x = 0, y = 0, xend = 100, yend = 100,
-                   colour = "equality"), linetype = 'dashed') +
+    colour = "equality"), linetype = 'dashed') +
   coord_cartesian(expand=FALSE) +
   scale_x_continuous(limits = c(0,100)) +
   scale_y_continuous(limits = c(0,100)) +
   scale_color_manual(values = c("#377eb8", "black")) +
   theme_bw() + theme(legend.position = "none") +
   geom_curve(aes(x = 53, y = 32, xend = 50, yend = 40),
-             curvature = -0.3, arrow = arrow(length = unit(0.02, "npc"))) +
-  annotate("text", label = svi_label, x = 54, y = 30, 
-           size = 5, colour = "#377eb8", hjust=0) +
+    curvature = -0.3, arrow = arrow(length = unit(0.02, "npc"))) +
+  annotate("text", label = f1_label, x = 54, y = 30, 
+    size = 5, colour = "#377eb8", hjust=0) +
   labs(x = "Cumulative Percentage of Counties, Ranked by Vaccine Coverage",
        y = "Cumulative Percentage of Vaccine Coverage",
        title = "Lorenz Curve for Relative Inequality by SVI")
@@ -222,10 +237,44 @@ f1 %>%
        y = "Cumulative Percentage of Vaccine Coverage",
        title = "Concentration Curve for Relative Inequality by SVI")
 
-
-t <- f1 %>%
+##### 6 #####
+##### Slope and Relative Index of Inequality
+t2 <- f1 %>%
   arrange(desc(svi_2020)) %>%
   mutate(disadv = 1 - svi_2020,
   ppop = 1/length(disadv),
-  ridit = (cumsum(ppop) - 0.5 * ppop)/sum(ppop))
+  ridit = (cumsum(ppop) - 0.5 * ppop)/sum(ppop)) 
+
+t2 %>%
+  ggplot(aes(x = ridit, y = svi_rate)) +
+    geom_point() + 
+    geom_smooth(method=lm , color="#377eb8", se=T) +
+  labs(x = "Position in cumulative distribution of SVI",
+       y = "Vaccination rate") +
+  theme_bw()
+
+t2m <- lm(svi_rate ~ ridit, data = t2)
+sii <- avg_comparisons(t2m, comparison = function(hi, lo) 
+         hi - lo, vcov = "HC2")
+rii <- avg_comparisons(t2m, comparison = function(hi, lo) 
+         hi / lo, vcov = "HC2")
+
+sii %>% bind_rows(rii) %>%
+  add_column(measure = c("SII", "RII")) %>%
+  select(measure, estimate, conf.low, conf.high) %>%
+  kbl(digits = 2, escape = F,
+      col.names = c("Measure", "Estimate", "95% LL", "95% UL")) %>%
+  add_header_above(c(" " = 1, 
+    "Slope and Relative Index of Inequality" = 3)) %>%
+  kable_classic(html_font = "Helvetica", full_width = F) %>%
+  footnote(general = "Standard errors adjusted for heteroskedasticity")
+  
+  
+
+
+
+
+
+
+
   
