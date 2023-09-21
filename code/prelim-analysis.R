@@ -138,9 +138,14 @@ t1 <- vax %>% filter(race!=5) %>%
             pop = sum(pop)) %>%
   mutate(rate = doses / pop * 100) %>%
   select(racef,sviq,rate) %>%
-  
   pivot_wider(names_from = sviq, names_prefix = "SVI",
               values_from = rate)
+t1 %>%
+  kbl(digits=1, escape = FALSE,
+      col.names = c("", "Q1", "Q2", "Q3", "Q4", "Q5")) %>%
+  add_header_above(c(" " = 1, "SVI Quintile (1=lowest)" = 5)) %>%
+  kable_classic(html_font = "Helvetica", full_width = F) %>%
+  footnote(general = "SVI quintiles based on unweighted distribution across counties.")
 
 t1_test <- vax %>% filter(race!=5) %>%
   group_by(racef, agef, sviq) %>%
@@ -158,22 +163,46 @@ options("RStata.StataPath"= '/Applications/Stata/StataMP.app/Contents/MacOS/stat
 s_me <- '
 qui poisson doses i.racef##i.sviqf, exp(pop100) cformat(%4.3f)
 margins racef#sviqf, predict(ir)
-qui reg rate i.racef##i.sviqf, robust
-margins racef#sviqf
+qui poisson doses i.racef##i.sviqf i.agef, exp(pop100) robust
+margins racef#sviqf, predict(ir)
 '
 stata(s_me, data.in=t1_test)
 
-t1c <- glm(doses ~ racef * sviqf , data = t1_test,
-  family="poisson", offset = log(pop))  
+# model ignoring age
+t1m <- glm(doses ~ racef * sviqf + offset(log(pop100)), 
+            data = t1_test, family="poisson")
 
-t1r <- lm(rate ~ racef * sviqf, data = t1_test) 
-t1lr <- glm(rate ~ racef * sviqf, data = t1_test,
-            family = "poisson") 
+# model predictions (marginal predictions)
+t1mp <- avg_predictions(t1m, newdata = datagrid(racef=unique, sviqf=unique, pop100=1), type ="response")
 
-library(emmeans)
-
-t1 %>%
+# reshape for table
+t1mp %>% 
+  select(racef, sviqf, estimate) %>%
+  pivot_wider(names_from = sviqf, names_prefix = "SVI",
+              values_from = estimate) %>%
   kbl(digits=1, escape = FALSE,
+      caption = "Crude vaccination rates",
+      col.names = c("", "Q1", "Q2", "Q3", "Q4", "Q5")) %>%
+  add_header_above(c(" " = 1, "SVI Quintile (1=lowest)" = 5)) %>%
+  kable_classic(html_font = "Helvetica", full_width = F) %>%
+  footnote(general = "SVI quintiles based on unweighted distribution across counties.")
+  
+t1m2 <- glm(doses ~ racef * sviqf + as.factor(agef) + 
+  offset(log(pop100)), data = t1_test, family="poisson")
+
+# model predictions (marginal predictions)
+t1mp2 <- predictions(t1m2, by = c("racef", "sviqf"), 
+  newdata = datagrid(racef=unique, 
+    sviqf=unique, agef=unique, pop100=1), 
+  type ="response")
+
+# reshape for table
+t1mp2 %>% 
+  select(racef, sviqf, estimate) %>%
+  pivot_wider(names_from = sviqf, names_prefix = "SVI",
+              values_from = estimate) %>%
+  kbl(digits=1, escape = FALSE,
+      caption = "Age-adjusted vaccination rates",
       col.names = c("", "Q1", "Q2", "Q3", "Q4", "Q5")) %>%
   add_header_above(c(" " = 1, "SVI Quintile (1=lowest)" = 5)) %>%
   kable_classic(html_font = "Helvetica", full_width = F) %>%

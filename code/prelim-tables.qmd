@@ -20,6 +20,7 @@ library(tsibble)
 library(haven)
 library(kableExtra)
 library(rineq)
+library(marginaleffects)
 ```
 
 ## County Disadvantage
@@ -87,7 +88,7 @@ vns <- vn %>% select(county, raceeth, agegp, doses) %>%
   
   # limit to adults
   filter(age>=4 & race<7) %>% drop_na() %>%
-  group_by(county, race) %>%
+  group_by(county, age, race) %>%
   summarise(doses = sum(doses))
 
 glimpse(vns)
@@ -126,7 +127,7 @@ vds <- vd %>%
   
   # limit to adults and drop NH Other race
   filter(age>=4 & race<7) %>% drop_na() %>%
-  group_by(county, race) %>%
+  group_by(county, age, race) %>%
   summarise(pop = sum(mp))
 
 glimpse(vds)
@@ -135,16 +136,21 @@ glimpse(vds)
 Now we merge the numerators, denominators, and the county disadvantage indexes to get a dataset we can use to generate summary tables of vaccine coverage by race-ethnicity and disadvantage index.
 
 ```{r merge, message=FALSE}
-# combine vaccine doses and population by county and race
+# combine vaccines and population by county, race, age
 vax <- vns %>% 
-  left_join(vds, by = join_by(county, race)) %>%
+  left_join(vds, by = join_by(county, age, race)) %>%
 
 # now combine with county deprivation indices
   inner_join(dq, by = join_by(county)) %>%
+# create race as factor
   mutate(racef = recode_factor(race, `1` = "Hispanic",
     `2` = "NH AI/AN", `3` = "NH API", 
     `4` = "NH Black", `5` = "NH Other", 
-    `6` = "NH White"))
+    `6` = "NH White"),
+# create age as factor
+  agef = recode_factor(age, `4` = "18-24 years",
+    `5` = "25-49 years", `6` = "50-64 years",
+    `7` = "65+ years"))
 ```
 
 The first 10 rows of the dataset look like...
@@ -156,30 +162,70 @@ kable(head(vax, n=10), digits=3) %>%
 
 ## Race-Ethnic Inequalities
 
-And now we can make the tables by summing up the number of vaccine doses and the population counts for each county deprivation quintile and race-ethnic group.
+And now we can make the tables by summing up the number of vaccine doses and the population counts for each county deprivation quintile and race-ethnic group. To assess the impact of adjustment for age on estimated vaccine rates and differences, these estimates are based on models, but the crude rates below are equivalent to simple calculations by race. First, the crude estimates by race and SVI:
 
 ```{r t1, message=FALSE}
+# generate vaccines and pop by race,age,SVI
 t1 <- vax %>% filter(race!=5) %>%
-  group_by(racef,sviq) %>%
-  summarise(doses = sum(doses), 
+  group_by(racef, agef, sviq) %>%
+  summarise(doses = sum(doses),
             pop = sum(pop)) %>%
-  mutate(rate = doses / pop * 100) %>%
-  select(racef,sviq,rate) %>%
-  
-  pivot_wider(names_from = sviq, names_prefix = "SVI",
-              values_from = rate)
+  mutate(pop100 = pop / 100,
+         rate = doses / pop * 100,
+         lnrate = log(rate),
+         sviqf = as.factor(sviq))
 
-t1 %>%
+# model ignoring age
+t1m <- glm(doses ~ racef * sviqf + offset(log(pop100)), 
+            data = t1, family="poisson")
+
+# model predictions (marginal predictions)
+predictions(t1m, 
+  newdata = datagrid(racef=unique, 
+    sviqf=unique, pop100=1), type ="response") %>%
+
+# reshape for table
+  select(racef, sviqf, estimate) %>%
+  pivot_wider(names_from = sviqf, names_prefix = "SVI",
+    values_from = estimate) %>%
   kbl(digits=1, escape = FALSE,
-    caption = "Vaccine coverage by race-ethnicity and SVI",
+    caption = "Crude vaccination rates",
     col.names = c("", "Q1", "Q2", "Q3", "Q4", "Q5")) %>%
-  add_header_above(c(" " = 1, "SVI Quintile (1=lowest)" = 5)) %>%
+  add_header_above(c(" " = 1, 
+    "SVI Quintile (1=lowest)" = 5)) %>%
   kable_classic(html_font = "Helvetica", full_width = F) %>%
-  kable_styling() %>%
-  footnote("SVI quintiles based on unweighted distribution across counties.")
+  footnote(general = "SVI quintiles based on unweighted distribution across counties.")
+
+```
+Now the marginal predictions with adjustment for age:
+```{r t1a, message = FALSE}
+# model adjusted for age
+t1m2 <- glm(doses ~ racef * sviqf + as.factor(agef) + 
+  offset(log(pop100)), data = t1, family="poisson")
+
+# model predictions (marginal predictions)
+predictions(t1m2,
+   by = c("racef", "sviqf"),
+  newdata = datagrid(racef=unique, sviqf=unique, 
+    agef=unique, pop100=1), type ="response") %>%
+
+# reshape for table
+  select(racef, sviqf, estimate) %>%
+  pivot_wider(names_from = sviqf, names_prefix = "SVI",
+    values_from = estimate) %>%
+  kbl(digits=1, escape = FALSE,
+    caption = "Age-adjusted vaccination rates",
+    col.names = c("", "Q1", "Q2", "Q3", "Q4", "Q5")) %>%
+  add_header_above(c(" " = 1, 
+    "SVI Quintile (1=lowest)" = 5)) %>%
+  kable_classic(html_font = "Helvetica", full_width = F) %>%
+  footnote(general = "SVI quintiles based on unweighted distribution across counties.")
+
 ```
 
-And by SDI:
+Age-adjustment seems to generally lead to larger estimates of vaccination rates, especially for Hispanics and NH APIs, but this varies a bit by SVI quintile.  
+
+Here are the crude rates by SDI:
 
 ```{r t2, message=FALSE}
 t2 <- vax %>% filter(race!=5) %>%
