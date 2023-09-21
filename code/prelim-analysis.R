@@ -146,10 +146,31 @@ t1_test <- vax %>% filter(race!=5) %>%
   group_by(racef, agef, sviq) %>%
   summarise(doses = sum(doses),
             pop = sum(pop)) %>%
-  mutate(pop100 = pop / 100)
+  mutate(pop100 = pop / 100,
+         rate = doses / pop * 100,
+         lnrate = log(rate),
+         sviqf = as.factor(sviq))
 
-t1c <- glm(doses ~ racef * sviq, data = t1_test,
-  family="poisson", offset = log(pop100))  
+library(RStata)
+options("RStata.StataVersion" = 16)
+options("RStata.StataPath"= '/Applications/Stata/StataMP.app/Contents/MacOS/stata-mp')
+
+s_me <- '
+qui poisson doses i.racef##i.sviqf, exp(pop100) cformat(%4.3f)
+margins racef#sviqf, predict(ir)
+qui reg rate i.racef##i.sviqf, robust
+margins racef#sviqf
+'
+stata(s_me, data.in=t1_test)
+
+t1c <- glm(doses ~ racef * sviqf , data = t1_test,
+  family="poisson", offset = log(pop))  
+
+t1r <- lm(rate ~ racef * sviqf, data = t1_test) 
+t1lr <- glm(rate ~ racef * sviqf, data = t1_test,
+            family = "poisson") 
+
+library(emmeans)
 
 t1 %>%
   kbl(digits=1, escape = FALSE,
