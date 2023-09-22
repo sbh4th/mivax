@@ -393,4 +393,4 @@ sii %>% bind_rows(rii) %>%
   kable_classic(html_font = "Helvetica", full_width = F) %>%
   footnote(general = "Standard errors adjusted for heteroskedasticity")
 ```
-The interpretation of the SII: Moving from the bottom to the top of the county distribution of SVI is associated with a 6.3 percentage point increase in vaccine coverage. The RII just puts this in relative terms, moving from the bottom to the top of the county distribution of SVI increases the vaccination coverage rate by 23%. 
+The interpretation of the SII: Moving from the bottom (most disadvantaged) to the top (most advantaged) of the county distribution of SVI is associated with a 6.3 percentage point increase in vaccine coverage. The RII just puts this in relative terms, moving from the bottom to the top of the county distribution of SVI increases the vaccination coverage rate by 23%. 

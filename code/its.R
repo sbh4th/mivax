@@ -32,6 +32,10 @@ weekly <- d %>% select(doses,date) %>%
             time = mean(time),
             week = mean(week))
 
+library(RStata)
+options("RStata.StataVersion" = 16)
+options("RStata.StataPath"= '/Applications/Stata/StataMP.app/Contents/MacOS/stata-mp')
+
 model1 <- glm(ndoses ~ post + time, family=poisson, 
               data=weekly)
 summary(model1)
@@ -66,18 +70,20 @@ ggtsdisplay(res3)
 grid <- data.frame(x = seq(0, 1, length = length(weekly)))
 grid %>% add_predictions(m1)
 
-t <- weekly %>% add_predictions(model4) %>%
-  mutate(pdoses = exp(pred)) 
-%>%
-  ggplot(aes(x = weekyr, y = ndoses)) +
+t <- weekly %>% # filter(time>25 & time<130) %>%
+  add_predictions(model4) %>%
+  mutate(pdoses = exp(pred)) %>%
+  ggplot(aes(x = time, y = ndoses)) +
   geom_point() +
-  geom_line(aes(x = weekyr, y = pdoses))
+  geom_line(aes(x = time, y = pdoses)) +
+  scale_x_continuous(breaks = seq(from = 0, to = 50, by=10))
 
 model4 <- glm(ndoses ~ post + time + harmonic(week,3,52), 
               family=quasipoisson, data=weekly)
 summary(model4)
 
 res4 <- residuals(model4, type="deviance")
+ggtsdisplay(res4)
 
 library(brms)
 library(cmdstanr)
@@ -148,7 +154,75 @@ tib <- tibble(
   pop100 = 90000 + (900000 * 0.0005 * time)
   ) %>%
   mutate(
-    lambda = 10 + (0.02 * time) + (0.2 * post) +
-    (0 * post * tsince),
+    lambda = 0 + (0.00 * time) + (0 * post) +
+    (0 * post * tsince) + 
+      -1.5 * sin(2 * pi * weeks / 52) +
+      -0.2 * cos(2 * pi * weeks / 52) +
+      0.3 * sin(2 * pi * 2 * weeks / 52) +
+      2.5 * cos(2 * pi * 2 * weeks / 52) +
+      -1.3 * sin(2 * pi * 3 * weeks / 52) +
+      0.2 * cos(2 * pi * 3 * weeks /52),
     doses = rpois(312, exp(lambda)))
+
+test_model <-glm(doses ~ post + time + harmonic(weeks, 3, 52), 
+  family = quasipoisson, data=tib)
+res_sim <- residuals(test_model, type="deviance")
+
+tib %>% # filter(time<105) %>%
+  mutate(yw = make_yearweek(
+    year = year, week= weeks)) %>%
+      add_predictions(test_model) %>%
+  mutate(pdoses = exp(pred)) %>%
+  ggplot(aes(x = yw, y = doses)) +
+  geom_point() +
+  geom_line(aes(x = yw, y = pdoses))
+
+
+library(tscount)
+ITSC.single.group = function(nsmp=18, bet.inter, bet.time, bet.x1, bet.timex1, gam, time, time.intrv1, y0=0, mu0=3){
+  # nsmp: the sample size (the number of time points)
+  # pchi.14: the upper quantile of chi-square (df)
+  # time: a vector of time (start.time:final.time)
+  # time.intrv1: indicator for onset of the intervention in time.
+  # Regression coefficients:
+  # bet.inter: intercept coefficient
+  # bet.x1: the coefficient for the binary indicator for the second phase of the study
+  # bet.time: the coefficient for time
+  # bet.timex1: the coefficient for the interaction of x1 and time
+  # gam: the coefficient 𝛾
+  # mu0: the coefficient 𝜇
+  pchi.14 = qchisq(0.95, 2)
+  pchi.24 = qchisq(0.95, 1)
+  bet = c(bet.inter, bet.time, bet.x1, bet.timex1 )
+  x1 = c(rep(0,time.intrv1), rep(1,nsmp-time.intrv1))
+  logtime = time
+  logtime1 = time-time.intrv1
+  #--------- generate data ---------#
+  x.t= model.matrix( ∼ logtime + x1 + logtime1:x1-1 )
+  eta = apply(cbind(1,x.t), 1, function(s){sum(s*bet)})
+  mu.lag = mu0
+  y = rep(NA, nsmp+1)
+  y[1] = y0
+  for (i in 2:(nsmp+1)){
+    e.lag = gam*log(y[i-1]+1)
+    mu.lag = exp(eta[i-1] + e.lag)
+    y[i] = rpois(1,mu.lag) # or rnbinom
+  }
+  
+  harmonic <- function(x, nfreq, period, intercept = FALSE) {
+    stopifnot(nfreq > 0)
+    pi <- base::pi  ## Just in case someone has redefined pi!
+    x <- as.numeric(x)
+    
+    k <- seq(1, nfreq) * 2 * pi / period
+    M <- outer(x, k)
+    sinM <- apply(M, 2, sin)
+    cosM <- apply(M, 2, cos)
+    if(!intercept) 
+      cbind(sinM, cosM)
+    else
+      cbind(1, sinM, cosM)
+  }
+  
+  A∗cos(2∗pi∗f∗t)+B∗sin(2∗pi∗f∗t)
 
