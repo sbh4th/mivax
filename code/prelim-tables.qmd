@@ -372,3 +372,25 @@ t2 %>%
   theme_bw()
 ```
 
+And here is the resulting regression model and interpretation of the SII and RII:
+
+```{r sii-est, message = F}
+t2m <- lm(svi_rate ~ ridit, data = t2)
+summary(t2m)
+
+sii <- avg_comparisons(t2m, comparison = function(hi, lo) 
+         hi - lo, vcov = "HC2")
+rii <- avg_comparisons(t2m, comparison = function(hi, lo) 
+         hi / lo, vcov = "HC2")
+
+sii %>% bind_rows(rii) %>%
+  add_column(measure = c("SII", "RII")) %>%
+  select(measure, estimate, conf.low, conf.high) %>%
+  kbl(digits = 2, escape = F,
+      col.names = c("Measure", "Estimate", "95% LL", "95% UL")) %>%
+  add_header_above(c(" " = 1, 
+    "Slope and Relative Index of Inequality (SVI)" = 3)) %>%
+  kable_classic(html_font = "Helvetica", full_width = F) %>%
+  footnote(general = "Standard errors adjusted for heteroskedasticity")
+```
+The interpretation of the SII: Moving from the bottom to the top of the county distribution of SVI is associated with a 6.3 percentage point increase in vaccine coverage. The RII just puts this in relative terms, moving from the bottom to the top of the county distribution of SVI increases the vaccination coverage rate by 23%. 

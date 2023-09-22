@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sam Harper">
-<meta name="dcterms.date" content="2023-09-21">
+<meta name="dcterms.date" content="2023-09-22">
 
 <title>Preliminary tables</title>
 <style>
@@ -101,7 +101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 21, 2023</p>
+      <p class="date">September 22, 2023</p>
     </div>
   </div>
   
@@ -801,7 +801,8 @@ SVI Quintile (1=lowest)
 
 </div>
 </div>
-<p>Age-adjustment seems to generally lead to larger estimates of vaccination rates, but And by SDI:</p>
+<p>Age-adjustment seems to generally lead to larger estimates of vaccination rates, especially for Hispanics and NH APIs, but this varies a bit by SVI quintile.</p>
+<p>Here are the crude rates by SDI:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -1119,6 +1120,106 @@ Concentration index
 <p><img src="prelim-tables_files/figure-html/sii-plot-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>And here is the resulting regression model and interpretation of the SII and RII:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>t2m <span class="ot">&lt;-</span> <span class="fu">lm</span>(svi_rate <span class="sc">~</span> ridit, <span class="at">data =</span> t2)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(t2m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = svi_rate ~ ridit, data = t2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-17.4113  -3.5982  -0.2237   3.8539  15.6121 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   27.377      1.295  21.142  &lt; 2e-16 ***
+ridit          6.342      2.243   2.828  0.00591 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5.898 on 81 degrees of freedom
+Multiple R-squared:  0.08984,   Adjusted R-squared:  0.07861 
+F-statistic: 7.996 on 1 and 81 DF,  p-value: 0.005906</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>sii <span class="ot">&lt;-</span> <span class="fu">avg_comparisons</span>(t2m, <span class="at">comparison =</span> <span class="cf">function</span>(hi, lo) </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>         hi <span class="sc">-</span> lo, <span class="at">vcov =</span> <span class="st">"HC2"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>rii <span class="ot">&lt;-</span> <span class="fu">avg_comparisons</span>(t2m, <span class="at">comparison =</span> <span class="cf">function</span>(hi, lo) </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>         hi <span class="sc">/</span> lo, <span class="at">vcov =</span> <span class="st">"HC2"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>sii <span class="sc">%&gt;%</span> <span class="fu">bind_rows</span>(rii) <span class="sc">%&gt;%</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_column</span>(<span class="at">measure =</span> <span class="fu">c</span>(<span class="st">"SII"</span>, <span class="st">"RII"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(measure, estimate, conf.low, conf.high) <span class="sc">%&gt;%</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">escape =</span> F,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Measure"</span>, <span class="st">"Estimate"</span>, <span class="st">"95% LL"</span>, <span class="st">"95% UL"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">" "</span> <span class="ot">=</span> <span class="dv">1</span>, </span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Slope and Relative Index of Inequality (SVI)"</span> <span class="ot">=</span> <span class="dv">3</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">html_font =</span> <span class="st">"Helvetica"</span>, <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">footnote</span>(<span class="at">general =</span> <span class="st">"Standard errors adjusted for heteroskedasticity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="lightable-classic table table-sm table-striped small" data-quarto-postprocess="true">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; empty-cells: hide; border-bottom: hidden;"></th>
+<th colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Slope and Relative Index of Inequality (SVI)
+</div></th>
+</tr>
+<tr class="odd">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Measure</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">95% LL</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">95% UL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SII</td>
+<td style="text-align: right;">6.34</td>
+<td style="text-align: right;">2.49</td>
+<td style="text-align: right;">10.19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RII</td>
+<td style="text-align: right;">1.23</td>
+<td style="text-align: right;">1.08</td>
+<td style="text-align: right;">1.39</td>
+</tr>
+</tbody><tfoot>
+<tr class="even">
+<td style="text-align: left; padding: 0;"><span style="font-style: italic;">Note: </span></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> Standard errors adjusted for heteroskedasticity</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tfoot>
+
+</table>
+
+
+</div>
+</div>
+<p>The interpretation of the SII: Moving from the bottom to the top of the county distribution of SVI is associated with a 6.3 percentage point increase in vaccine coverage. The RII just puts this in relative terms, moving from the bottom to the top of the county distribution of SVI increases the vaccination coverage rate by 23%.</p>
 </section>
 
 </main>
