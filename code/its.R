@@ -157,18 +157,18 @@ tib <- tibble(
   time = seq(from = 1, to=length(weeks), by = 1),
   post = if_else(year >= 2021, 1, 0),
   tsince = if_else(post==1, time - 52, 0),
-  estimate = ifelse(post == 1, time - min(time), 0),
+  # estimate = ifelse(post == 1, time - min(time), 0),
   pop100 = 90000 + (900000 * 0.0005 * time)
-  ) 
-%>%
+  ) %>%
   mutate(
     lambda = 9.33 + (0.00 * time) + (0 * post) +
     (0 * post * tsince) + 
       -1.9 * sin(2 * pi * weeks / 52.25) +
       0.38 * sin(2 * pi * 2 * weeks / 52.25) +
       2.65 * cos(2 * pi * weeks / 52.25) +
-      -1.28 * cos(2 * pi * 2 * weeks / 52.25),
-    doses = rpois(312, exp(lambda)))
+      -1.28 * cos(2 * pi * 2 * weeks / 52.25) +
+      dnorm(length(weeks), mean = 0, sd = 100),
+    doses = rpois(length(weeks), exp(lambda)))
 
 test_model <-glm(doses ~ post + time + harmonic(weeks, 2, 52.25), 
   family = quasipoisson, data=tib)
