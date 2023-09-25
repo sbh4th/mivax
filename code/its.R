@@ -15,7 +15,8 @@ d <- read_excel("data/past-season.xlsx",
   col_names = c("county", "lhd", "agegp", "facility",
                 "doses", "date"), skip = 1)
 
-weekly <- d %>% select(doses,date) %>% 
+weekly <- d %>% select(doses,date) %>%
+  filter(date>="2020-01-01" & date<="2021-12-31") %>% 
   mutate(week = week(date),
         weekyr = yearweek(date),
         event = make_yearweek(
@@ -71,16 +72,21 @@ grid <- data.frame(x = seq(0, 1, length = length(weekly)))
 grid %>% add_predictions(m1)
 
 t <- weekly %>% # filter(time>25 & time<130) %>%
-  add_predictions(model4) %>%
+  add_predictions(model5) %>%
   mutate(pdoses = exp(pred)) %>%
-  ggplot(aes(x = time, y = ndoses)) +
+  ggplot(aes(x = weekyr, y = ndoses)) +
   geom_point() +
-  geom_line(aes(x = time, y = pdoses)) +
+  geom_line(aes(x = weekyr, y = pdoses)) 
++
   scale_x_continuous(breaks = seq(from = 0, to = 50, by=10))
 
 model4 <- glm(ndoses ~ post + time + harmonic(week,3,52), 
               family=quasipoisson, data=weekly)
 summary(model4)
+
+model5 <- glm(ndoses ~ post + time + harmonic(week,2,52.25), 
+              family=quasipoisson, data=weekly)
+summary(model5)
 
 res4 <- residuals(model4, type="deviance")
 ggtsdisplay(res4)
@@ -146,25 +152,25 @@ plotB <- as.data.frame(predict(model_br, probs = c(0.05, 0.95))) |>
 
 ## simulated data
 tib <- tibble(
-  weeks = rep(seq(from = 1, to = 52, by =1), 6),
-  year = rep(2017:2022, each = 52),
-  time = seq(from = 1, to=312, by = 1),
-  post = if_else(year >= 2020, 1, 0),
-  tsince = if_else(post==1, time - 157, 0),
+  weeks = rep(seq(from = 1, to = 52, by =1), 2),
+  year = rep(2020:2021, each = 52),
+  time = seq(from = 1, to=length(weeks), by = 1),
+  post = if_else(year >= 2021, 1, 0),
+  tsince = if_else(post==1, time - 52, 0),
+  estimate = ifelse(post == 1, time - min(time), 0),
   pop100 = 90000 + (900000 * 0.0005 * time)
-  ) %>%
+  ) 
+%>%
   mutate(
-    lambda = 0 + (0.00 * time) + (0 * post) +
+    lambda = 9.33 + (0.00 * time) + (0 * post) +
     (0 * post * tsince) + 
-      -1.5 * sin(2 * pi * weeks / 52) +
-      -0.2 * cos(2 * pi * weeks / 52) +
-      0.3 * sin(2 * pi * 2 * weeks / 52) +
-      2.5 * cos(2 * pi * 2 * weeks / 52) +
-      -1.3 * sin(2 * pi * 3 * weeks / 52) +
-      0.2 * cos(2 * pi * 3 * weeks /52),
+      -1.9 * sin(2 * pi * weeks / 52.25) +
+      0.38 * sin(2 * pi * 2 * weeks / 52.25) +
+      2.65 * cos(2 * pi * weeks / 52.25) +
+      -1.28 * cos(2 * pi * 2 * weeks / 52.25),
     doses = rpois(312, exp(lambda)))
 
-test_model <-glm(doses ~ post + time + harmonic(weeks, 3, 52), 
+test_model <-glm(doses ~ post + time + harmonic(weeks, 2, 52.25), 
   family = quasipoisson, data=tib)
 res_sim <- residuals(test_model, type="deviance")
 
