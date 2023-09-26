@@ -15,10 +15,13 @@ d <- read_excel("data/past-season.xlsx",
   col_names = c("county", "lhd", "agegp", "facility",
                 "doses", "date"), skip = 1)
 
+# convert to weekly counts of vaccine doses
 weekly <- d %>% select(doses,date) %>%
+  # limit to two full years
   filter(date>="2020-01-01" & date<="2021-12-31") %>% 
   mutate(week = week(date),
         weekyr = yearweek(date),
+        month = month(date),
         event = make_yearweek(
           year = 2021L, week = 1L,
           week_start = getOption("lubridate.week.start", 1)
@@ -31,7 +34,8 @@ weekly <- d %>% select(doses,date) %>%
             tsevent = mean(tsevent),
             post = mean(post),
             time = mean(time),
-            week = mean(week))
+            week = mean(week),
+            month = mean(month))
 
 library(RStata)
 options("RStata.StataVersion" = 16)
@@ -85,7 +89,7 @@ model4 <- glm(ndoses ~ post + time + harmonic(week,3,52),
 summary(model4)
 
 model5 <- glm(ndoses ~ post + time + harmonic(week,2,52.25), 
-              family=quasipoisson, data=weekly)
+              family=poisson, data=weekly)
 summary(model5)
 
 res4 <- residuals(model4, type="deviance")
@@ -152,83 +156,110 @@ plotB <- as.data.frame(predict(model_br, probs = c(0.05, 0.95))) |>
 
 ## simulated data
 tib <- tibble(
-  weeks = rep(seq(from = 1, to = 52, by =1), 2),
+  week = rep(seq(from = 1, to = 52, by =1), 2),
   year = rep(2020:2021, each = 52),
-  time = seq(from = 1, to=length(weeks), by = 1),
+  time = seq(from = 1, to=length(week), by = 1),
   post = if_else(year >= 2021, 1, 0),
   tsince = if_else(post==1, time - 52, 0),
+  u_x = rnorm(length(week)),
   # estimate = ifelse(post == 1, time - min(time), 0),
-  pop100 = 90000 + (900000 * 0.0005 * time)
+  pop100 = 90000 + (900000 * 0.00025 * time)
   ) %>%
   mutate(
-    lambda = 9.33 + (0.00 * time) + (0 * post) +
+    lambda = 9 + (0.00 * time) + (0 * post) +
     (0 * post * tsince) + 
-      -1.9 * sin(2 * pi * weeks / 52.25) +
-      0.38 * sin(2 * pi * 2 * weeks / 52.25) +
-      2.65 * cos(2 * pi * weeks / 52.25) +
-      -1.28 * cos(2 * pi * 2 * weeks / 52.25) +
-      dnorm(length(weeks), mean = 0, sd = 100),
-    doses = rpois(length(weeks), exp(lambda)))
+      -1.9 * sin(2 * pi * week / 52.25) +
+      0.38 * sin(2 * pi * 2 * week / 52.25) +
+      2.65 * cos(2 * pi * week / 52.25) +
+      -1.28 * cos(2 * pi * 2 * week / 52.25) +
+      0.25 * u_x,
+    lambda_o = exp((lambda - 11.5) + log(pop100)),
+    doses = rpois(length(week), exp(lambda)),
+    doses2 = rpois(length(week), lambda_o),
+    rate = doses / pop100)
 
-test_model <-glm(doses ~ post + time + harmonic(weeks, 2, 52.25), 
-  family = quasipoisson, data=tib)
+test_model <-glm(doses ~ post + time + harmonic(week, 2, 52.25), 
+  family = poisson, data=tib)
+
+test_model_o <- glm(doses2 ~ post + time + harmonic(week, 2, 52.25) + offset(log(pop100)), family = poisson, data=tib)
+
+test_model_r <- glm(rate ~ post + time + harmonic(week, 2, 52.25), family = poisson, data=tib)
+
 res_sim <- residuals(test_model, type="deviance")
+
+# compare real vs. simulate models
+cm <- 
 
 tib %>% # filter(time<105) %>%
   mutate(yw = make_yearweek(
-    year = year, week= weeks)) %>%
-      add_predictions(test_model) %>%
-  mutate(pdoses = exp(pred)) %>%
-  ggplot(aes(x = yw, y = doses)) +
+    year = year, week= week),
+    pop100 = 1) %>%
+      add_predictions(test_model_o, type = "response") %>%
+  # mutate(pdoses = exp(pred)) %>%
+  ggplot(aes(x = yw, y = pred)) +
   geom_point() +
-  geom_line(aes(x = yw, y = pdoses))
+  geom_line(aes(x = yw, y = pred))
+
+weekly %>% select(time,ndoses) %>%
+  rename(doses = ndoses) %>%
+  mutate(type = "Observed") %>%
+  bind_rows(tib %>% 
+              select(time, doses) %>%
+              mutate(type = "Simulated")) %>%
+  ggplot(aes(x = time, y = doses, 
+             color = type, group = type)) +
+    geom_point() + geom_line() + theme_bw() +
+    scale_color_manual("Data", values = c("#377eb8", "#e41a1c"))
 
 
-library(tscount)
-ITSC.single.group = function(nsmp=18, bet.inter, bet.time, bet.x1, bet.timex1, gam, time, time.intrv1, y0=0, mu0=3){
-  # nsmp: the sample size (the number of time points)
-  # pchi.14: the upper quantile of chi-square (df)
-  # time: a vector of time (start.time:final.time)
-  # time.intrv1: indicator for onset of the intervention in time.
-  # Regression coefficients:
-  # bet.inter: intercept coefficient
-  # bet.x1: the coefficient for the binary indicator for the second phase of the study
-  # bet.time: the coefficient for time
-  # bet.timex1: the coefficient for the interaction of x1 and time
-  # gam: the coefficient 𝛾
-  # mu0: the coefficient 𝜇
-  pchi.14 = qchisq(0.95, 2)
-  pchi.24 = qchisq(0.95, 1)
-  bet = c(bet.inter, bet.time, bet.x1, bet.timex1 )
-  x1 = c(rep(0,time.intrv1), rep(1,nsmp-time.intrv1))
-  logtime = time
-  logtime1 = time-time.intrv1
-  #--------- generate data ---------#
-  x.t= model.matrix( ∼ logtime + x1 + logtime1:x1-1 )
-  eta = apply(cbind(1,x.t), 1, function(s){sum(s*bet)})
-  mu.lag = mu0
-  y = rep(NA, nsmp+1)
-  y[1] = y0
-  for (i in 2:(nsmp+1)){
-    e.lag = gam*log(y[i-1]+1)
-    mu.lag = exp(eta[i-1] + e.lag)
-    y[i] = rpois(1,mu.lag) # or rnbinom
-  }
+iseed  = 20201221
+nrep <- 100  
+true_mu <- 1
+set.seed(iseed)
+
+# create function to make fake dataset
+make_data <- function(b1 = 0, 
+              b2 = 0, b3 = 0) {
   
-  harmonic <- function(x, nfreq, period, intercept = FALSE) {
-    stopifnot(nfreq > 0)
-    pi <- base::pi  ## Just in case someone has redefined pi!
-    x <- as.numeric(x)
-    
-    k <- seq(1, nfreq) * 2 * pi / period
-    M <- outer(x, k)
-    sinM <- apply(M, 2, sin)
-    cosM <- apply(M, 2, cos)
-    if(!intercept) 
-      cbind(sinM, cosM)
-    else
-      cbind(1, sinM, cosM)
-  }
+  tibble(
+    week = rep(seq(from = 1, to = 52, by =1), 6),
+    year = rep(2017:2022, each = 52),
+    time = seq(from = 1, to=length(week), by = 1),
+    post = if_else(year >= 2021, 1, 0),
+    tsince = if_else(post==1, time - 52, 0),
+    u_x = rnorm(length(week)),
+    pop100 = 90000 + (900000 * 0.0005 * time)
+    ) %>%
+  mutate(
+    lambda = 9 + (b1 * time) + (b2 * post) +
+    (b3 * post * tsince) + 
+      -1.9 * sin(2 * pi * week / 52.25) +
+      0.38 * sin(2 * pi * 2 * week / 52.25) +
+      2.65 * cos(2 * pi * week / 52.25) +
+      -1.28 * cos(2 * pi * 2 * week / 52.25) +
+      0.25 * u_x + log(pop100),
+    doses = rpois(length(week), exp(lambda)))
+}
+
+# make dataset
+data <- make_data()
+
+# simple plot of time series
+data %>% ggplot(aes(x = time, y = doses)) +
+  geom_point() + geom_line() + theme_bw()
+
+# function to run ITS model
+
+run_ITS = function(...) {
   
-  A∗cos(2∗pi∗f∗t)+B∗sin(2∗pi∗f∗t)
+  # resimulate the data
+  data <- make_data()
+  
+  # estimate the model
+  mod <- glm(doses)
+  
+}
+
+  
+
 
