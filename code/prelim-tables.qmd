@@ -227,24 +227,63 @@ Age-adjustment seems to generally lead to larger estimates of vaccination rates,
 
 Here are the crude rates by SDI:
 
-```{r t2, message=FALSE}
+```{r t2a, message=FALSE}
+# generate vaccines and pop by race,age,SVI
 t2 <- vax %>% filter(race!=5) %>%
-  group_by(racef,sdiq) %>%
-  summarise(doses = sum(doses), 
+  group_by(racef, agef, sdiq) %>%
+  summarise(doses = sum(doses),
             pop = sum(pop)) %>%
-  mutate(rate = doses / pop * 100) %>%
-  select(racef,sdiq,rate) %>%
-  
-  pivot_wider(names_from = sdiq, names_prefix = "SDI",
-              values_from = rate)
+  mutate(pop100 = pop / 100,
+         rate = doses / pop * 100,
+         lnrate = log(rate),
+         sdiqf = as.factor(sdiq))
 
-t2 %>%
+# model ignoring age
+t2m <- glm(doses ~ racef * sdiqf + offset(log(pop100)), 
+            data = t2, family="poisson")
+
+# model predictions (marginal predictions)
+predictions(t2m, 
+  newdata = datagrid(racef=unique, 
+    sdiqf=unique, pop100=1), type ="response") %>%
+
+# reshape for table
+  select(racef, sdiqf, estimate) %>%
+  pivot_wider(names_from = sdiqf, names_prefix = "SDI",
+    values_from = estimate) %>%
   kbl(digits=1, escape = FALSE,
-    caption = "Vaccine coverage by race-ethnicity and SDI",
+    caption = "Crude vaccination rates",
     col.names = c("", "Q1", "Q2", "Q3", "Q4", "Q5")) %>%
-  add_header_above(c(" " = 1, "SDI Quintile (1=lowest)" = 5)) %>%
-  kable_classic(html_font = "Helvetica", full_width = T) %>%
+  add_header_above(c(" " = 1, 
+    "SDI Quintile (1=lowest)" = 5)) %>%
+  kable_classic(html_font = "Helvetica", full_width = F) %>%
   footnote(general = "SDI quintiles based on unweighted distribution across counties.")
+
+```
+Now the marginal predictions for race-ethnic inequalities by SDI with adjustment for age:
+```{r t2b, message = FALSE}
+# model adjusted for age
+t2m2 <- glm(doses ~ racef * sdiqf + as.factor(agef) + 
+  offset(log(pop100)), data = t2, family="poisson")
+
+# model predictions (marginal predictions)
+predictions(t2m2,
+   by = c("racef", "sdiqf"),
+  newdata = datagrid(racef=unique, sdiqf=unique, 
+    agef=unique, pop100=1), type ="response") %>%
+
+# reshape for table
+  select(racef, sdiqf, estimate) %>%
+  pivot_wider(names_from = sdiqf, names_prefix = "SDI",
+    values_from = estimate) %>%
+  kbl(digits=1, escape = FALSE,
+    caption = "Age-adjusted vaccination rates",
+    col.names = c("", "Q1", "Q2", "Q3", "Q4", "Q5")) %>%
+  add_header_above(c(" " = 1, 
+    "SDI Quintile (1=lowest)" = 5)) %>%
+  kable_classic(html_font = "Helvetica", full_width = F) %>%
+  footnote(general = "SDI quintiles based on unweighted distribution across counties.")
+
 ```
 
 ## Inequalities by SVI or SDI

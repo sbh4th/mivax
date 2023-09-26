@@ -5,15 +5,20 @@ library(lubridate)
 library(tsibble)
 library(haven)
 library(cowplot)
+library(forecast)
 library(fpp2)
 library(tsModel)
 library(modelr)
 library(tsModel)
+library(modelsummary)
+library(kableExtra)
+
 
 # read in data
 d <- read_excel("data/past-season.xlsx",
   col_names = c("county", "lhd", "agegp", "facility",
                 "doses", "date"), skip = 1)
+
 
 # convert to weekly counts of vaccine doses
 weekly <- d %>% select(doses,date) %>%
@@ -35,126 +40,44 @@ weekly <- d %>% select(doses,date) %>%
             post = mean(post),
             time = mean(time),
             week = mean(week),
-            month = mean(month))
+            month = mean(month)) %>%
+  mutate(fyear = year(weekyr),
+         fseason = if_else(week < 27, 
+           paste(fyear-1, fyear, sep = "-"),
+           paste(fyear, fyear + 1, sep = "-")))
 
-library(RStata)
-options("RStata.StataVersion" = 16)
-options("RStata.StataPath"= '/Applications/Stata/StataMP.app/Contents/MacOS/stata-mp')
-
-model1 <- glm(ndoses ~ post + time, family=poisson, 
-              data=weekly)
-summary(model1)
-
-model2 <- glm(ndoses ~ post + time, family=quasipoisson, 
-              data=weekly)
-summary(model2)
-
+# simple plot
 weekly %>% ggplot(aes(x = weekyr, y=ndoses)) +
-  geom_line()
+  geom_point() + geom_line() + theme_bw() +
+  scale_y_continuous(labels = ~ format(.x, scientific = FALSE)) +
+  labs(x = "Year and Week", y = "Number of doses")
 
-library(forecast)
-
-components <- decompose(ts(weekly$ndoses, frequency=52))
-plot(components)
-
-
-res2 <- residuals(model2, type="deviance")
-
-ggtsdisplay(res2)
-
-pattern <- decompose(ts(res2, frequency=52))
-plot(pattern)
-
-model3 <- glm(ndoses ~ post + time + harmonic(week,6,52), 
-              family=quasipoisson, data=weekly)
-summary(model3)
-
-res3 <- residuals(model3, type="deviance")
-ggtsdisplay(res3)
-
-grid <- data.frame(x = seq(0, 1, length = length(weekly)))
-grid %>% add_predictions(m1)
-
-t <- weekly %>% # filter(time>25 & time<130) %>%
-  add_predictions(model5) %>%
-  mutate(pdoses = exp(pred)) %>%
-  ggplot(aes(x = weekyr, y = ndoses)) +
-  geom_point() +
-  geom_line(aes(x = weekyr, y = pdoses)) 
-+
-  scale_x_continuous(breaks = seq(from = 0, to = 50, by=10))
-
-model4 <- glm(ndoses ~ post + time + harmonic(week,3,52), 
-              family=quasipoisson, data=weekly)
-summary(model4)
-
-model5 <- glm(ndoses ~ post + time + harmonic(week,2,52.25), 
+# Poisson model with harmonic terms
+# note no offset as not provide in dataset
+ma <- glm(ndoses ~ post + time + harmonic(week,2,52.25), 
               family=poisson, data=weekly)
-summary(model5)
 
-res4 <- residuals(model4, type="deviance")
-ggtsdisplay(res4)
+check_overdispersion(ma)
 
-library(brms)
-library(cmdstanr)
+modelsummary(list("Conventional SE" = ma,
+                  "Robust SE" = ma),
+             vcov = list("iid", "HC3"),
+             gof_omit = ".*")
 
-model_br <- brm(ndoses ~ time + post + s(week),
-                data = weekly,
-                family = poisson(),
-                sample_prior = 'yes',
-                chains=4, cores=4,
-                backend = 'cmdstanr')
-
-# Geoms for base plot
-ggplot_its_base <- function(data, n_years) {
-  ggplot(data, aes(x = months_elapsed)) +
-    ylab('Counts (n)') +
-    xlab('Month/Seasons elapsed') +
-    scale_x_continuous(breaks = seq(1, n_years*12, by = 6),
-                       labels = function(x) {paste0('Season ', ceiling(x/12), ' \n(', data$months[x],')')}) + # Start at Sept
-    theme_minimal() + 
-    theme(legend.position = 'top', 
-          legend.title = element_blank(), 
-          panel.grid.major.x = element_blank(),
-          panel.grid.minor.x = element_blank(),
-          axis.text.x = element_text(vjust = 5))
-  
-}
-
-# Additional geoms for predictions
-ggplot_its_base <- function(data) {
-  ggplot(data, aes(x = time)) +
-    ylab('Counts (n)') +
-    xlab('Weeks elapsed') +
-    scale_x_continuous(breaks = seq(1, 157, by = 36)) +
-    theme_minimal() + 
-    theme(legend.position = 'top', 
-          legend.title = element_blank(), 
-          panel.grid.major.x = element_blank(),
-          panel.grid.minor.x = element_blank(),
-          axis.text.x = element_text(vjust = 5))
-  
-}
-
-ggplot_its_pred <- function(plot) {
-  list(
-  geom_ribbon(aes(ymin = `Q5`, ymax = `Q95`), fill = 'grey90'),
-  geom_point(aes(y = Estimate, color = 'Predictions')),
-  geom_line(aes(y = Estimate, color = 'Predictions')),
-  geom_point(aes(y = ndoses, color = 'Actual')),
-  geom_segment(aes(xend = time, y = ndoses, yend  = Estimate), 
-               linetype = 'dotted', color = 'grey20'),
-  scale_color_manual(values = c('Predictions' = 'steelblue2', 'Actual' = 'forestgreen'))
-  )
-}
-
-plotB <- as.data.frame(predict(model_br, probs = c(0.05, 0.95))) |> 
-  cbind(weekly) |>
-  ggplot(aes(x = time)) +
-  ggplot_its_pred()
+# plot with predictions vs. actual
+weekly %>%
+  add_predictions(ma, type = "response") %>%
+  # mutate(pdoses = exp(pred)) %>%
+  ggplot(aes(x = weekyr, y = ndoses)) +
+  geom_point() + geom_line() + theme_bw() +
+  geom_line(aes(x = weekyr, y = pred), 
+            color = "#377eb8") +
+  scale_y_continuous(labels = ~ format(.x, scientific = FALSE)) +
+  labs(x = "Year and Week", y = "Number of doses") +
+  ggtitle("Observed and model predicted counts")
 
 
-## simulated data
+## simulated data for same 2-year period
 tib <- tibble(
   week = rep(seq(from = 1, to = 52, by =1), 2),
   year = rep(2020:2021, each = 52),
@@ -178,12 +101,27 @@ tib <- tibble(
     doses2 = rpois(length(week), lambda_o),
     rate = doses / pop100)
 
-test_model <-glm(doses ~ post + time + harmonic(week, 2, 52.25), 
+ms <-glm(doses ~ post + time + harmonic(week, 2, 52.25), 
   family = poisson, data=tib)
 
-test_model_o <- glm(doses2 ~ post + time + harmonic(week, 2, 52.25) + offset(log(pop100)), family = poisson, data=tib)
+check_overdispersion(ms)
 
-test_model_r <- glm(rate ~ post + time + harmonic(week, 2, 52.25), family = poisson, data=tib)
+# comparison of count models for actual vs.
+# simulated data
+modelsummary(list("Observed" = ma, "Simulated" = ms,
+  "Observed" = ma, "Simulated" = ms),
+  vcov = list("iid", "iid", "HC3", "HC3"),
+  gof_omit = ".*", output = "kableExtra") %>%
+  add_header_above(c(" " = 1, "Conventional SE" = 2, 
+    "Robust SE" = 2))
+
+
+# model including offset
+mso <- glm(doses2 ~ post + time + 
+  harmonic(week, 2, 52.25) + offset(log(pop100)), 
+  family = poisson, data=tib)
+
+
 
 res_sim <- residuals(test_model, type="deviance")
 
@@ -194,11 +132,13 @@ tib %>% # filter(time<105) %>%
   mutate(yw = make_yearweek(
     year = year, week= week),
     pop100 = 1) %>%
-      add_predictions(test_model_o, type = "response") %>%
-  # mutate(pdoses = exp(pred)) %>%
-  ggplot(aes(x = yw, y = pred)) +
-  geom_point() +
-  geom_line(aes(x = yw, y = pred))
+      add_predictions(mso, type = "response") %>%
+  ggplot(aes(x = yw, y = rate)) +
+  geom_point() + geom_line() + theme_bw() +  
+  geom_line(aes(x = yw, y = pred), 
+            color = "#377eb8") +
+  labs(x = "Year and Week", y = "Vaccinated (%)") +
+  ggtitle("Simulated and model predicted rates")
 
 weekly %>% select(time,ndoses) %>%
   rename(doses = ndoses) %>%
@@ -261,5 +201,49 @@ run_ITS = function(...) {
 }
 
   
+
+
+# Geoms for base plot
+ggplot_its_base <- function(data, n_years) {
+  ggplot(data, aes(x = months_elapsed)) +
+    ylab('Counts (n)') +
+    xlab('Month/Seasons elapsed') +
+    scale_x_continuous(breaks = seq(1, n_years*12, by = 6),
+                       labels = function(x) {paste0('Season ', ceiling(x/12), ' \n(', data$months[x],')')}) + # Start at Sept
+    theme_minimal() + 
+    theme(legend.position = 'top', 
+          legend.title = element_blank(), 
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          axis.text.x = element_text(vjust = 5))
+  
+}
+
+# Additional geoms for predictions
+ggplot_its_base <- function(data) {
+  ggplot(data, aes(x = time)) +
+    ylab('Counts (n)') +
+    xlab('Weeks elapsed') +
+    scale_x_continuous(breaks = seq(1, 157, by = 36)) +
+    theme_minimal() + 
+    theme(legend.position = 'top', 
+          legend.title = element_blank(), 
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          axis.text.x = element_text(vjust = 5))
+  
+}
+
+ggplot_its_pred <- function(plot) {
+  list(
+    geom_ribbon(aes(ymin = `Q5`, ymax = `Q95`), fill = 'grey90'),
+    geom_point(aes(y = Estimate, color = 'Predictions')),
+    geom_line(aes(y = Estimate, color = 'Predictions')),
+    geom_point(aes(y = ndoses, color = 'Actual')),
+    geom_segment(aes(xend = time, y = ndoses, yend  = Estimate), 
+                 linetype = 'dotted', color = 'grey20'),
+    scale_color_manual(values = c('Predictions' = 'steelblue2', 'Actual' = 'forestgreen'))
+  )
+}
 
 
