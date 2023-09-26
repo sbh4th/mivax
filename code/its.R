@@ -140,6 +140,7 @@ tib %>% # filter(time<105) %>%
   labs(x = "Year and Week", y = "Vaccinated (%)") +
   ggtitle("Simulated and model predicted rates")
 
+# comparison of observed and simulated data
 weekly %>% select(time,ndoses) %>%
   rename(doses = ndoses) %>%
   mutate(type = "Observed") %>%
@@ -149,12 +150,13 @@ weekly %>% select(time,ndoses) %>%
   ggplot(aes(x = time, y = doses, 
              color = type, group = type)) +
     geom_point() + geom_line() + theme_bw() +
-    scale_color_manual("Data", values = c("#377eb8", "#e41a1c"))
+    scale_color_manual("Data", 
+      values = c("#377eb8", "#e41a1c"))
 
 
-iseed  = 20201221
-nrep <- 100  
-true_mu <- 1
+iseed  = 20230923
+nrep <- 10  
+
 set.seed(iseed)
 
 # create function to make fake dataset
@@ -165,28 +167,43 @@ make_data <- function(b1 = 0,
     week = rep(seq(from = 1, to = 52, by =1), 6),
     year = rep(2017:2022, each = 52),
     time = seq(from = 1, to=length(week), by = 1),
-    post = if_else(year >= 2021, 1, 0),
-    tsince = if_else(post==1, time - 52, 0),
+    post = if_else(time > 196, 1, 0),
+    tsince = if_else(post==1, time - 196, 0),
+    post_tsince = post * tsince,
     u_x = rnorm(length(week)),
-    pop100 = 90000 + (900000 * 0.0005 * time)
+    pop100 = 90000 + (900000 * 0.00005 * time)
     ) %>%
   mutate(
     lambda = 9 + (b1 * time) + (b2 * post) +
-    (b3 * post * tsince) + 
+    (b3 * post_tsince) + 
       -1.9 * sin(2 * pi * week / 52.25) +
       0.38 * sin(2 * pi * 2 * week / 52.25) +
       2.65 * cos(2 * pi * week / 52.25) +
       -1.28 * cos(2 * pi * 2 * week / 52.25) +
-      0.25 * u_x + log(pop100),
-    doses = rpois(length(week), exp(lambda)))
+      0.25 * u_x,
+    lambda_o = exp((lambda - 11.5) + log(pop100)),
+    doses = rpois(length(week), exp(lambda)),
+    doses2 = rpois(length(week), lambda_o),
+    rate = doses / pop100)
 }
 
 # make dataset
 data <- make_data()
 
 # simple plot of time series
-data %>% ggplot(aes(x = time, y = doses)) +
-  geom_point() + geom_line() + theme_bw()
+data %>% ggplot(aes(x = time, y = rate)) +
+  geom_point() + geom_line() + 
+  geom_vline(xintercept = 196, 
+   linetype = "dashed", color = "gray60") +
+  labs(y = "Weekly vaccination rate (%)",
+       x = "Weeks since 2017") +
+  geom_smooth(aes(x = time, y = rate), 
+    data=subset(data, post==0), method="lm",
+    color = "#377eb8") +
+  geom_smooth(aes(x = time, y = rate), 
+    data=subset(data, post==1), method="lm",
+    color = "#e41a1c") +
+  theme_bw()
 
 # function to run ITS model
 
@@ -196,11 +213,44 @@ run_ITS = function(...) {
   data <- make_data()
   
   # estimate the model
-  mod <- glm(doses)
+  mod <- glm(doses2 ~ post + time + post_tsince +
+    harmonic(week, 2, 52.25) + offset(log(pop100)), 
+    family = quasipoisson, data=data)
+  
+  # grab the results for post
+  coef_results[i] <- coef(model)[2]
+  sig_results[i] <- tidy(model)$p.value[2] <= .05
   
 }
 
+coef_results <- c()
+sig_results <- c()
+
+for (i in 1:2000) {
+  # Have to re-create the data EVERY TIME or it will just be the same data over and over
+  data <- make_data()
   
+  # Run the analysis
+  mod <- glm(doses2 ~ post + time + post_tsince +
+    harmonic(week, 2, 52.25) + offset(log(pop100)), 
+    family = quasipoisson, data=data)
+  
+  # Get the results
+  coef_results[i] <- coef(mod)[2]
+  sig_results[i] <- tidy(mod)$p.value[2] <= .05
+}
+
+data %>% 
+  mutate(yw = make_yearweek(
+    year = year, week= week),
+    pop100 = 1) %>%
+  add_predictions(mod, type = "response") %>%
+  ggplot(aes(x = yw, y = rate)) +
+  geom_point() + geom_line() + theme_bw() +  
+  geom_line(aes(x = yw, y = pred), 
+            color = "#377eb8") +
+  labs(x = "Year and Week", y = "Vaccinated (%)") +
+  ggtitle("Simulated and model predicted rates") 
 
 
 # Geoms for base plot
