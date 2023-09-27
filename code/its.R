@@ -5,11 +5,9 @@ library(lubridate)
 library(tsibble)
 library(haven)
 library(cowplot)
-library(forecast)
-library(fpp2)
+library(performance)
 library(tsModel)
 library(modelr)
-library(tsModel)
 library(modelsummary)
 library(kableExtra)
 
@@ -121,11 +119,9 @@ mso <- glm(doses2 ~ post + time +
   harmonic(week, 2, 52.25) + offset(log(pop100)), 
   family = poisson, data=tib)
 
-
-
 res_sim <- residuals(test_model, type="deviance")
 
-# compare real vs. simulate models
+# compare real vs. simulated models
 cm <- 
 
 tib %>% # filter(time<105) %>%
@@ -188,7 +184,7 @@ make_data <- function(b1 = 0,
 }
 
 # make dataset
-data <- make_data()
+data <- make_data(b1 = 0, b2 = 0, b3 = 0)
 
 # simple plot of time series
 data %>% ggplot(aes(x = time, y = rate)) +
@@ -228,72 +224,119 @@ sig_results <- c()
 
 for (i in 1:2000) {
   # Have to re-create the data EVERY TIME or it will just be the same data over and over
-  data <- make_data()
+  data <- make_data(b1=0,b2=0.1,b3=0)
   
   # Run the analysis
   mod <- glm(doses2 ~ post + time + post_tsince +
     harmonic(week, 2, 52.25) + offset(log(pop100)), 
-    family = quasipoisson, data=data)
+    family = poisson, data=data)
   
   # Get the results
-  coef_results[i] <- coef(mod)[2]
-  sig_results[i] <- tidy(mod)$p.value[2] <= .05
+  # use robust SEs
+  tmod <- tidy(coeftest(mod, vcov = vcovHC))
+  coef_results[i] <- tmod$estimate[2]
+  sig_results[i] <- tmod$p.value[2] <= .05
 }
 
-data %>% 
-  mutate(yw = make_yearweek(
-    year = year, week= week),
-    pop100 = 1) %>%
-  add_predictions(mod, type = "response") %>%
-  ggplot(aes(x = yw, y = rate)) +
-  geom_point() + geom_line() + theme_bw() +  
-  geom_line(aes(x = yw, y = pred), 
-            color = "#377eb8") +
+mean(sig_results)
+
+results_tibble <- tibble(coef = coef_results,
+                         sig = sig_results)
+ggplot(results_tibble, aes(x = coef)) + 
+  geom_density() + 
+  # Prettify!
+  theme_minimal() + 
+  labs(x = 'Coefficient', y = 'Density')
+
+
+# Create function to test different effect sizes
+post_power <- function(effect) {
+  # empty object to hold power values
+  sig_results <- c()
+  
+  for (i in 1:500) {
+  # re-create simulated data
+  data <- make_data(b1=0,b2=effect,b3=0)
+  
+    # Run the analysis
+  mod <- glm(doses2 ~ post + time + post_tsince +
+    harmonic(week, 2, 52.25) + offset(log(pop100)), 
+    family = poisson, data=data)
+  
+  # Get the results
+  # use robust SEs
+  tmod <- tidy(coeftest(mod, vcov = vcovHC))
+
+  sig_results[i] <- tmod$p.value[2] <= .05
+    
+  }
+  sig_results %>%
+    mean() %>%
+    return()
+}
+
+# Now try different effect sizes
+power_levels <- c()
+
+effects <- c(0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5)
+
+for (i in 1:7) {
+  power_levels[i] <- post_power(effects[i])
+}
+
+# Where do we cross 80%?
+power_results <- tibble(effect = effects,
+                        power = power_levels)
+kbl(power_results) %>%
+  kable_styling()
+
+data <- make_data(b2 = 0.3)
+
+mod <- glm(doses2 ~ post + time + post_tsince +
+    harmonic(week, 2, 52.25) + offset(log(pop100)), 
+    family = poisson, data=data)
+
+p1 <- data %>% 
+  mutate(pop100 = 1) %>%
+  add_predictions(mod, type = "response") 
+
+p1 %>%
+  ggplot(aes(x = time, y = rate)) +
+  geom_point(color = "gray60") + 
+  geom_line(color = "gray60") + theme_bw() +
+  geom_line(aes(x = time, y = pred), 
+    data=subset(p1, post==0), color = "#377eb8") +
+  geom_smooth(aes(x = time, y = pred), 
+    data=subset(p1, post==0), color = "#377eb8",
+    method = 'lm', se = FALSE) +
+  geom_line(aes(x = time, y = pred), 
+    data=subset(p1, post==1), color = "#e41a1c") +
+  geom_smooth(aes(x = time, y = pred), 
+    data=subset(p1, post==1), color = "#e41a1c",
+    method = 'lm', se = FALSE) +
   labs(x = "Year and Week", y = "Vaccinated (%)") +
   ggtitle("Simulated and model predicted rates") 
 
 
-# Geoms for base plot
-ggplot_its_base <- function(data, n_years) {
-  ggplot(data, aes(x = months_elapsed)) +
-    ylab('Counts (n)') +
-    xlab('Month/Seasons elapsed') +
-    scale_x_continuous(breaks = seq(1, n_years*12, by = 6),
-                       labels = function(x) {paste0('Season ', ceiling(x/12), ' \n(', data$months[x],')')}) + # Start at Sept
-    theme_minimal() + 
-    theme(legend.position = 'top', 
-          legend.title = element_blank(), 
-          panel.grid.major.x = element_blank(),
-          panel.grid.minor.x = element_blank(),
-          axis.text.x = element_text(vjust = 5))
-  
-}
+# simple plot of time series
+data %>% ggplot(aes(x = time, y = rate)) +
+  geom_point() + geom_line() + 
+  geom_vline(xintercept = 196, 
+   linetype = "dashed", color = "gray60") +
+  labs(y = "Weekly vaccination rate (%)",
+       x = "Weeks since 2017") +
+  geom_smooth(aes(x = time, y = rate), 
+    data=subset(data, post==0), method="lm",
+    color = "#377eb8") +
+  geom_smooth(aes(x = time, y = rate), 
+    data=subset(data, post==1), method="lm",
+    color = "#e41a1c") +
+  theme_bw()
 
-# Additional geoms for predictions
-ggplot_its_base <- function(data) {
-  ggplot(data, aes(x = time)) +
-    ylab('Counts (n)') +
-    xlab('Weeks elapsed') +
-    scale_x_continuous(breaks = seq(1, 157, by = 36)) +
-    theme_minimal() + 
-    theme(legend.position = 'top', 
-          legend.title = element_blank(), 
-          panel.grid.major.x = element_blank(),
-          panel.grid.minor.x = element_blank(),
-          axis.text.x = element_text(vjust = 5))
-  
-}
 
-ggplot_its_pred <- function(plot) {
-  list(
-    geom_ribbon(aes(ymin = `Q5`, ymax = `Q95`), fill = 'grey90'),
-    geom_point(aes(y = Estimate, color = 'Predictions')),
-    geom_line(aes(y = Estimate, color = 'Predictions')),
-    geom_point(aes(y = ndoses, color = 'Actual')),
-    geom_segment(aes(xend = time, y = ndoses, yend  = Estimate), 
-                 linetype = 'dotted', color = 'grey20'),
-    scale_color_manual(values = c('Predictions' = 'steelblue2', 'Actual' = 'forestgreen'))
-  )
-}
+
+
+
+
 
 

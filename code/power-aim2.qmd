@@ -1,0 +1,412 @@
+---
+title: "Power for Aim 2"
+author: Sam Harper
+date: today
+format: html
+editor: source
+code-fold: true
+---
+
+## Setup
+
+The basic idea for simulating for power starts with building a realistic dataset that mimics the actual data we will use, then vary the potential effect size over a plausible range to see whether, given our data and assumptions, we are likely to be able to detect a true effect with reasonable precision.
+
+Let's load the required packages for the analysis:
+```{r setup, message = F}
+library(here)
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(tsibble)
+library(haven)
+library(cowplot)
+library(performance)
+library(tsModel)
+library(modelr)
+library(modelsummary)
+library(kableExtra)
+library(lmtest)
+library(sandwich)
+```
+Let's start with looking at actual vaccination data from Michigan's Flu Dashboard. Here we will read in the data
+
+```{r d, message=F}
+# read in data
+d <- read_excel(here("data", "past-season.xlsx"),
+  col_names = c("county", "lhd", "agegp", "facility",
+                "doses", "date"), skip = 1)
+kable(head(d, n = 10)) %>%
+  kable_styling()
+```
+
+Now let's limit the data to two full years (2020, and 2021) and aggregate the number of doses by week:
+
+```{r d1, message = F}
+# convert to weekly counts of vaccine doses
+weekly <- d %>% select(doses,date) %>%
+  # limit to two full years
+  filter(date>="2020-01-01" & date<="2021-12-31") %>% 
+  mutate(week = week(date),
+        weekyr = yearweek(date),
+        month = month(date),
+        event = make_yearweek(
+          year = 2021L, week = 1L,
+          week_start = getOption("lubridate.week.start", 1)
+        ),
+        tsevent = weekyr - event,
+        post = if_else(tsevent>=0,1,0),
+        time = as.integer(weekyr - min(weekyr))) %>%
+  group_by(weekyr) %>%
+  summarise(ndoses = sum(doses),
+            tsevent = mean(tsevent),
+            post = mean(post),
+            time = mean(time),
+            week = mean(week),
+            month = mean(month)) %>%
+  mutate(fyear = year(weekyr),
+         fseason = if_else(week < 27, 
+           paste(fyear-1, fyear, sep = "-"),
+           paste(fyear, fyear + 1, sep = "-")))
+
+kable(head(weekly, n = 10)) %>%
+  kable_styling()
+```
+
+## Seasonal patterns
+Let's look at a simple plot of the number of doses given each week, noting that there are no denominators in the data provided by the Flu Dashboard:
+
+```{r dplot, message = F}
+# simple plot
+weekly %>% ggplot(aes(x = weekyr, y=ndoses)) +
+  geom_point() + geom_line() + theme_bw() +
+  scale_y_continuous(labels = ~ format(.x, scientific = FALSE)) +
+  labs(x = "Year and Week", y = "Number of doses")
+```
+
+There is strong evidence of seasonality in these data, but these patterns can be captured through the use of flexible modeling of time. There are many options, but let's use a Poisson regression with harmonic terms to capture the seasonal variation. We will two pairs of sine/cosine terms. In addition, since the Poisson model makes the strong assumption that the mean and variance are equal, we will check for overdispersion and, if noted, will use robust standard errors. 
+
+```{r dmodel, message = F}
+# Poisson model with harmonic terms
+# note no offset as not provide in dataset
+ma <- glm(ndoses ~ post + time + harmonic(week,2,52.25), 
+  family=poisson, data=weekly)
+
+check_overdispersion(ma)
+
+modelsummary(list("Conventional SE" = ma,
+                  "Robust SE" = ma),
+             vcov = list("iid", "HC3"),
+             gof_omit = ".*")
+```
+
+There is definitely evidence of overdispersion here, which is given further evidence by the large differences in conventional ('iid') and robust standard errors. 
+
+Let's look at our how our simple model with time does capturing the underlying patterns in the actual Michigan data:
+
+```{r dpred, message = F}
+# plot with predictions vs. actual
+weekly %>%
+  add_predictions(ma, type = "response") %>%
+  ggplot(aes(x = weekyr, y = ndoses)) +
+  geom_point() + geom_line() + theme_bw() +
+  geom_line(aes(x = weekyr, y = pred), 
+    color = "#377eb8") +
+  scale_y_continuous(labels = ~ 
+    format(.x, scientific = FALSE)) +
+  labs(x = "Year and Week", y = "Number of doses") +
+  ggtitle("Observed and model predicted counts")
+```
+Not bad! This model seems pretty reasonable for capturing the seasonal nature of vaccination data, so we will use these harmonic parameters to simulate data that we can experiment on to estimate our power.
+
+## Simulating actual data
+
+Let's start by trying to recreate the Michigan data for 2020 and 2021. As noted above the Dashboard data did not include denominators, but we have done so here, approximating the Michigan population of around 9-10 million with some slow growth over time. We also, for the time being, ignore any overall trend in vaccinations over time to focus in on being able to capture the seasonality.
+
+```{r simtib, message = F}
+# set seed for reproducibility
+set.seed(20230926)
+
+## simulated data for same 2-year period
+tib <- tibble(
+  week = rep(seq(from = 1, to = 52, by =1), 2),
+  year = rep(2020:2021, each = 52),
+  time = seq(from = 1, to=length(week), by = 1),
+  post = if_else(year >= 2021, 1, 0),
+  tsince = if_else(post==1, time - 52, 0),
+  u_x = rnorm(length(week)),
+  # estimate = ifelse(post == 1, time - min(time), 0),
+  pop100 = 90000 + (900000 * 0.00025 * time)
+  ) %>%
+  mutate(
+    lambda = 9 + (0.00 * time) + (0 * post) +
+    (0 * post * tsince) + 
+      -1.9 * sin(2 * pi * week / 52.25) +
+      0.38 * sin(2 * pi * 2 * week / 52.25) +
+      2.65 * cos(2 * pi * week / 52.25) +
+      -1.28 * cos(2 * pi * 2 * week / 52.25) +
+      0.25 * u_x,
+    lambda_o = exp((lambda - 11.5) + log(pop100)),
+    doses = rpois(length(week), exp(lambda)),
+    doses2 = rpois(length(week), lambda_o),
+    rate = doses / pop100)
+
+kable(head(tib, n = 10)) %>%
+  kable_styling()
+```
+
+Now we can fit a similar model to our simulated data and compare with the actual data to see how things shape up. We'll do the same check for overdispersion, which we tried to simulate as well. Below is a table that compares the actual Michigan data for 2020-2021 with our simulated dataset.
+
+```{r simmod, message = F}
+ms <- glm(doses ~ post + time + 
+  harmonic(week, 2, 52.25), 
+  family = poisson, data=tib)
+
+check_overdispersion(ms)
+
+# comparison of count models for actual vs.
+# simulated data
+modelsummary(list("Observed" = ma, "Simulated" = ms,
+  "Observed" = ma, "Simulated" = ms),
+  vcov = list("iid", "iid", "HC3", "HC3"),
+  gof_omit = ".*", output = "kableExtra") %>%
+  add_header_above(c(" " = 1, "Conventional SE" = 2, 
+    "Robust SE" = 2))
+```
+As expected, we have also created data that are seasonally overdispersed. The coefficients and standard errors for the harmonic terms are reasonably similar. 
+
+Because we have denominators in our simulated dataset, we can run a Poisson model that is likely to be more similar to what we will estimate in practice, so we include the log of the population as an offset term, so we can parameterize this model with the vaccine *rate* rather than the number of doses as the outcome.
+
+```{r simoff, message = F}
+# model including offset
+mso <- glm(doses2 ~ post + time + 
+  harmonic(week, 2, 52.25) + offset(log(pop100)), 
+  family = poisson, data=tib)
+
+modelsummary(list("Conventional SE" = mso,
+                  "Robust SE" = mso),
+             vcov = list("iid", "HC3"),
+             gof_omit = ".*")
+```
+
+We note here that the rate parameterization does not affect any of the cofficients apart from the Intercept term, but it does allow us to generate predictions on the rate scale. Let's visualize the simulated rates (in black) as well as our model predictions (in blue):
+
+```{r simmodplot, message = F}
+tib %>% # filter(time<105) %>%
+  mutate(yw = make_yearweek(
+    year = year, week= week),
+    pop100 = 1) %>%
+      add_predictions(mso, type = "response") %>%
+  ggplot(aes(x = yw, y = rate)) +
+  geom_point() + geom_line() + theme_bw() +  
+  geom_line(aes(x = yw, y = pred), 
+            color = "#377eb8") +
+  labs(x = "Year and Week", y = "Vaccinated (%)") +
+  ggtitle("Simulated and model predicted rates")
+```
+
+This looks pretty reasonable. We can also compare our simulated data with the actual Michigan data to see how well we did:
+
+```{r simobs, message = F}
+# comparison of observed and simulated data
+weekly %>% select(time,ndoses) %>%
+  rename(doses = ndoses) %>%
+  mutate(type = "Observed") %>%
+  bind_rows(tib %>% 
+              select(time, doses) %>%
+              mutate(type = "Simulated")) %>%
+  ggplot(aes(x = time, y = doses, 
+             color = type, group = type)) +
+    geom_point() + geom_line() + theme_bw() +
+    scale_color_manual("Data", 
+      values = c("#377eb8", "#e41a1c")) +
+  scale_y_continuous(labels = ~ 
+    format(.x, scientific = FALSE)) +
+  labs(x = "Time", y = "Number of doses")
+```
+
+## Simulating plausible data
+Now that we have the basic idea for simulating what our data may look like, it's time to work on the power analysis. The first thing to do is to create a new set of fake data, but this time we will generate 6 years of data and create an intervention that will start in October of 2020. 
+
+We will start by creating a function to create fake data and allows us to choose the magnitude of the treatment effect we want to estimate, essentially by allowing us to vary the magnitude of the coefficients on time, post and (potentially) the time*post term that would also allow for a change in slope after the intervention. For the time being, let's focus on the change in vaccinations just after the policy is implemented, i.e., the `post` term in our regression models. 
+
+```{r simfctn, message = F}
+# create function to make fake dataset
+make_data <- function(b1 = 0, 
+              b2 = 0, b3 = 0) {
+  
+  tibble(
+    week = rep(seq(from = 1, to = 52, by =1), 6),
+    year = rep(2017:2022, each = 52),
+    time = seq(from = 1, to=length(week), by = 1),
+    post = if_else(time > 196, 1, 0),
+    tsince = if_else(post==1, time - 196, 0),
+    post_tsince = post * tsince,
+    u_x = rnorm(length(week)),
+    pop100 = 90000 + (900000 * 0.00005 * time)
+    ) %>%
+  mutate(
+    lambda = 9 + (b1 * time) + (b2 * post) +
+    (b3 * post_tsince) + 
+      -1.9 * sin(2 * pi * week / 52.25) +
+      0.38 * sin(2 * pi * 2 * week / 52.25) +
+      2.65 * cos(2 * pi * week / 52.25) +
+      -1.28 * cos(2 * pi * 2 * week / 52.25) +
+      0.25 * u_x,
+    lambda_o = exp((lambda - 11.5) + log(pop100)),
+    doses = rpois(length(week), exp(lambda)),
+    doses2 = rpois(length(week), lambda_o),
+    rate = doses / pop100)
+}
+
+# make dataset
+data <- make_data(b1 = 0, b2 = 0, b3 = 0)
+```
+
+The code above created a fake dataset with no treatment effect for any of our model terms, but does allow for seasonality. Here is a plot of our simulated data. The vertical line indicates when the intervention took place, and we can see that fitting simple linear slopes to the pre and post period is consistent with no impact of this intervention, which is what we should get since we set it up that way. 
+
+```{r fakeplot, message = F}
+# simple plot of time series
+data %>% ggplot(aes(x = time, y = rate)) +
+  geom_point() + geom_line() + 
+  geom_vline(xintercept = 196, 
+   linetype = "dashed", color = "gray60") +
+  labs(y = "Weekly vaccination rate (%)",
+       x = "Weeks since 2017") +
+  geom_smooth(aes(x = time, y = rate), 
+    data=subset(data, post==0), method="lm",
+    color = "#377eb8") +
+  geom_smooth(aes(x = time, y = rate), 
+    data=subset(data, post==1), method="lm",
+    color = "#e41a1c") +
+  theme_bw()
+```
+
+## Simulating power
+Making up fake data is only the first step in simulating for power. Using a single fake dataset doesn't tell us much about sampling variation, so the basic idea now is to iterate, many times, the actual process we will use to analyze our data, and see how the resulting coefficients and power change across many iterations. 
+
+So the basic process now is to do the following, over many iterations: 1) recreate our fake data; 2) estimate our model; 3) grab the results (coefficients, standard errors, p-values); and 4) summarize. Let's do this initially for a simulated dataset where we know the true parameter on `post` is 0. The code below does exactly that, 2000 times, so we can see how our coefficient of interest varies across simulations.
+
+```{r simzero, message = F, cache = T}
+# set up objects to collect our results
+coef_results <- c()
+sig_results <- c()
+
+# use 2000 iterations
+for (i in 1:2000) {
+  # re-create the data
+  data <- make_data(b1=0, b2=0, b3=0)
+  
+  # Run the analysis
+  mod <- glm(doses2 ~ post + time + post_tsince +
+    harmonic(week, 2, 52.25) + offset(log(pop100)), 
+    family = poisson, data=data)
+  
+  # Get the results
+  # use robust SEs
+  tmod <- tidy(coeftest(mod, vcov = vcovHC))
+  coef_results[i] <- tmod$estimate[2]
+  sig_results[i] <- tmod$p.value[2] <= .05
+}
+```
+
+We can put those results into a dataframe to easily summarize. Let's look at the plot of our estimated coefficient on `post` over our 2000 simulations:
+
+```{r simresult, message = F}
+results_tib <- tibble(coef = coef_results,
+  sig = sig_results)
+
+ggplot(results_tib, aes(x = coef)) + 
+  geom_density() +   theme_bw() + 
+  labs(x = 'Coefficient', y = 'Density')
+```
+
+We can see that the coefficient is centered on 0, just as we designed it. We can also ask how often the p-value on that coefficient was <0.05 over all of the simulations. Recall that power is the probability of rejecting the null when the effect is truly null. We conventionally set alpha as 0.05, meaning that even when the effect is actually 0, we should still expect to get 'significant' results around 5% of the time. 
+
+We can use the frequency of 'significant' p-values to estimate our power in this way. For the prior analysis, where we set the coefficient on `post` to be 0, we should see around 5% of p-values with a value of <0.05. 
+```{r simsum}
+results_tib %>% 
+  summarise(mean_coef = mean(coef), 
+            power = mean(sig)) %>% 
+  kbl() %>% kable_styling()
+```
+
+We can see that around 6% of our simulations had a p-value less than 0.05, so this seems like the simulation is working well. Now we can move on to seeing how our power changes with different effect sizes.  The code below just includes a function to allow us to do our simulated power analysis for a range of different effect sizes. 
+
+```{r simpower, message = F}
+# Create function to test different effect sizes
+post_power <- function(effect) {
+  # empty object to hold power values
+  sig_results <- c()
+  
+  for (i in 1:500) {
+  # re-create simulated data
+  data <- make_data(b1=0,b2=effect,b3=0)
+  
+    # Run the analysis
+  mod <- glm(doses2 ~ post + time + post_tsince +
+    harmonic(week, 2, 52.25) + offset(log(pop100)), 
+    family = poisson, data=data)
+  
+  # Get the results
+  # use robust SEs
+  tmod <- tidy(coeftest(mod, vcov = vcovHC))
+
+  sig_results[i] <- tmod$p.value[2] <= .05
+    
+  }
+  sig_results %>%
+    mean() %>%
+    return()
+}
+```
+
+Now we will run our simulations for effect sizes in the plausible range. Recall that for a Poisson model on the log scale, these coefficients represent the percentage change in the vaccination rate after the intervention. Let's try coefficients that range from 0 to a 50% increase in vaccination rates, i.e., we will test the following coefficients for `post`: `{0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5}`
+
+```{r simeffeccts, message = F, cache=T}
+# Now try different effect sizes
+power_levels <- c()
+
+effects <- c(0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5)
+
+for (i in 1:7) {
+  power_levels[i] <- post_power(effects[i])
+}
+
+# Where do we cross 80%?
+power_results <- tibble(effect = effects,
+                        power = power_levels)
+kbl(power_results) %>%
+  kable_styling()
+```
+
+The table shows, as expected, that our power increased with larger effect sizes. With our simulated data under these assumptions we will have >80% power to detect a 30% change in vaccination rates following the intervention. What would a 30% change look like? We can make a simple plot.
+
+```{r sim03, message = F}
+data <- make_data(b2 = 0.3)
+
+mod <- glm(doses2 ~ post + time + post_tsince +
+    harmonic(week, 2, 52.25) + offset(log(pop100)), 
+    family = poisson, data=data)
+
+p1 <- data %>% 
+  mutate(pop100 = 1) %>%
+  add_predictions(mod, type = "response") 
+
+p1 %>%
+  ggplot(aes(x = time, y = rate)) +
+  geom_point(color = "gray60") + 
+  geom_line(color = "gray60") + theme_bw() +
+  geom_line(aes(x = time, y = pred), 
+    data=subset(p1, post==0), color = "#377eb8") +
+  geom_smooth(aes(x = time, y = pred), 
+    data=subset(p1, post==0), color = "#377eb8",
+    method = 'lm', se = FALSE) +
+  geom_line(aes(x = time, y = pred), 
+    data=subset(p1, post==1), color = "#e41a1c") +
+  geom_smooth(aes(x = time, y = pred), 
+    data=subset(p1, post==1), color = "#e41a1c",
+    method = 'lm', se = FALSE) +
+  labs(x = "Year and Week", y = "Vaccinated (%)") +
+  ggtitle("Simulated and model predicted rates if `post` = 0.3")
+```
+

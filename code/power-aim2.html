@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam Harper">
+<meta name="dcterms.date" content="2023-09-26">
+
+<title>Power for Aim 2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="power-aim2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="power-aim2_files/libs/quarto-html/quarto.js"></script>
+<script src="power-aim2_files/libs/quarto-html/popper.min.js"></script>
+<script src="power-aim2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="power-aim2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="power-aim2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="power-aim2_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="power-aim2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="power-aim2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="power-aim2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+<script src="power-aim2_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="power-aim2_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Power for Aim 2</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sam Harper </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 26, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>The basic idea for simulating for power starts with building a realistic dataset that mimics the actual data we will use, then vary the potential effect size over a plausible range to see whether, given our data and assumptions, we are likely to be able to detect a true effect with reasonable precision.</p>
+<p>Let’s load the required packages for the analysis:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tsibble)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tsModel)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelr)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sandwich)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Let’s start with looking at actual vaccination data from Michigan’s Flu Dashboard. Here we will read in the data</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read in data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"past-season.xlsx"</span>),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"county"</span>, <span class="st">"lhd"</span>, <span class="st">"agegp"</span>, <span class="st">"facility"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">"doses"</span>, <span class="st">"date"</span>), <span class="at">skip =</span> <span class="dv">1</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(d, <span class="at">n =</span> <span class="dv">10</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> county </th>
+   <th style="text-align:left;"> lhd </th>
+   <th style="text-align:left;"> agegp </th>
+   <th style="text-align:left;"> facility </th>
+   <th style="text-align:right;"> doses </th>
+   <th style="text-align:left;"> date </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-09-21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-09-28 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-11-02 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-11-02 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-11-09 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-11-09 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-11-16 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-11-23 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-11-23 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Alcona </td>
+   <td style="text-align:left;"> DHD-2 </td>
+   <td style="text-align:left;"> 13 through 17 years </td>
+   <td style="text-align:left;"> Adolescent </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 2019-12-21 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>Now let’s limit the data to two full years (2020, and 2021) and aggregate the number of doses by week:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to weekly counts of vaccine doses</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>weekly <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span> <span class="fu">select</span>(doses,date) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># limit to two full years</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date<span class="sc">&gt;=</span><span class="st">"2020-01-01"</span> <span class="sc">&amp;</span> date<span class="sc">&lt;=</span><span class="st">"2021-12-31"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">week =</span> <span class="fu">week</span>(date),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">weekyr =</span> <span class="fu">yearweek</span>(date),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">month =</span> <span class="fu">month</span>(date),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">event =</span> <span class="fu">make_yearweek</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">year =</span> 2021L, <span class="at">week =</span> 1L,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>          <span class="at">week_start =</span> <span class="fu">getOption</span>(<span class="st">"lubridate.week.start"</span>, <span class="dv">1</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">tsevent =</span> weekyr <span class="sc">-</span> event,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">post =</span> <span class="fu">if_else</span>(tsevent<span class="sc">&gt;=</span><span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">time =</span> <span class="fu">as.integer</span>(weekyr <span class="sc">-</span> <span class="fu">min</span>(weekyr))) <span class="sc">%&gt;%</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(weekyr) <span class="sc">%&gt;%</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">ndoses =</span> <span class="fu">sum</span>(doses),</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">tsevent =</span> <span class="fu">mean</span>(tsevent),</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">post =</span> <span class="fu">mean</span>(post),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">time =</span> <span class="fu">mean</span>(time),</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">week =</span> <span class="fu">mean</span>(week),</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">month =</span> <span class="fu">mean</span>(month)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fyear =</span> <span class="fu">year</span>(weekyr),</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">fseason =</span> <span class="fu">if_else</span>(week <span class="sc">&lt;</span> <span class="dv">27</span>, </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>           <span class="fu">paste</span>(fyear<span class="dv">-1</span>, fyear, <span class="at">sep =</span> <span class="st">"-"</span>),</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>           <span class="fu">paste</span>(fyear, fyear <span class="sc">+</span> <span class="dv">1</span>, <span class="at">sep =</span> <span class="st">"-"</span>)))</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(weekly, <span class="at">n =</span> <span class="dv">10</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> weekyr </th>
+   <th style="text-align:right;"> ndoses </th>
+   <th style="text-align:left;"> tsevent </th>
+   <th style="text-align:right;"> post </th>
+   <th style="text-align:right;"> time </th>
+   <th style="text-align:right;"> week </th>
+   <th style="text-align:right;"> month </th>
+   <th style="text-align:right;"> fyear </th>
+   <th style="text-align:left;"> fseason </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 2020 W01 </td>
+   <td style="text-align:right;"> 35446 </td>
+   <td style="text-align:left;"> -53 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2020 W02 </td>
+   <td style="text-align:right;"> 55215 </td>
+   <td style="text-align:left;"> -52 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2020 W03 </td>
+   <td style="text-align:right;"> 45182 </td>
+   <td style="text-align:left;"> -51 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2020 W04 </td>
+   <td style="text-align:right;"> 37190 </td>
+   <td style="text-align:left;"> -50 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2020 W05 </td>
+   <td style="text-align:right;"> 33342 </td>
+   <td style="text-align:left;"> -49 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2020 W06 </td>
+   <td style="text-align:right;"> 26984 </td>
+   <td style="text-align:left;"> -48 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2020 W07 </td>
+   <td style="text-align:right;"> 23560 </td>
+   <td style="text-align:left;"> -47 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2020 W08 </td>
+   <td style="text-align:right;"> 21375 </td>
+   <td style="text-align:left;"> -46 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2020 W09 </td>
+   <td style="text-align:right;"> 20775 </td>
+   <td style="text-align:left;"> -45 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2020 W10 </td>
+   <td style="text-align:right;"> 21372 </td>
+   <td style="text-align:left;"> -44 weeks </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:left;"> 2019-2020 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</section>
+<section id="seasonal-patterns" class="level2">
+<h2 class="anchored" data-anchor-id="seasonal-patterns">Seasonal patterns</h2>
+<p>Let’s look at a simple plot of the number of doses given each week, noting that there are no denominators in the data provided by the Flu Dashboard:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># simple plot</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>weekly <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> weekyr, <span class="at">y=</span>ndoses)) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="sc">~</span> <span class="fu">format</span>(.x, <span class="at">scientific =</span> <span class="cn">FALSE</span>)) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year and Week"</span>, <span class="at">y =</span> <span class="st">"Number of doses"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="power-aim2_files/figure-html/dplot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>There is strong evidence of seasonality in these data, but these patterns can be captured through the use of flexible modeling of time. There are many options, but let’s use a Poisson regression with harmonic terms to capture the seasonal variation. We will two pairs of sine/cosine terms. In addition, since the Poisson model makes the strong assumption that the mean and variance are equal, we will check for overdispersion and, if noted, will use robust standard errors.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Poisson model with harmonic terms</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># note no offset as not provide in dataset</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>ma <span class="ot">&lt;-</span> <span class="fu">glm</span>(ndoses <span class="sc">~</span> post <span class="sc">+</span> time <span class="sc">+</span> <span class="fu">harmonic</span>(week,<span class="dv">2</span>,<span class="fl">52.25</span>), </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family=</span>poisson, <span class="at">data=</span>weekly)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">check_overdispersion</span>(ma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># Overdispersion test
+
+       dispersion ratio =   4382.417
+  Pearson's Chi-Squared = 425094.411
+                p-value =    &lt; 0.001</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"Conventional SE"</span> <span class="ot">=</span> ma,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Robust SE"</span> <span class="ot">=</span> ma),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">vcov =</span> <span class="fu">list</span>(<span class="st">"iid"</span>, <span class="st">"HC3"</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">gof_omit =</span> <span class="st">".*"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:center;"> Conventional SE </th>
+   <th style="text-align:center;"> Robust SE </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:center;"> 9.329 </td>
+   <td style="text-align:center;"> 9.329 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.003) </td>
+   <td style="text-align:center;"> (0.220) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> post </td>
+   <td style="text-align:center;"> −0.171 </td>
+   <td style="text-align:center;"> −0.171 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.004) </td>
+   <td style="text-align:center;"> (0.301) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> time </td>
+   <td style="text-align:center;"> 0.001 </td>
+   <td style="text-align:center;"> 0.001 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.000) </td>
+   <td style="text-align:center;"> (0.006) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)1 </td>
+   <td style="text-align:center;"> −1.903 </td>
+   <td style="text-align:center;"> −1.903 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.097) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)2 </td>
+   <td style="text-align:center;"> 0.376 </td>
+   <td style="text-align:center;"> 0.376 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.115) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)3 </td>
+   <td style="text-align:center;"> 2.650 </td>
+   <td style="text-align:center;"> 2.650 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.003) </td>
+   <td style="text-align:center;"> (0.175) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)4 </td>
+   <td style="text-align:center;"> −1.276 </td>
+   <td style="text-align:center;"> −1.276 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.001) </td>
+   <td style="text-align:center;"> (0.093) </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>There is definitely evidence of overdispersion here, which is given further evidence by the large differences in conventional (‘iid’) and robust standard errors.</p>
+<p>Let’s look at our how our simple model with time does capturing the underlying patterns in the actual Michigan data:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot with predictions vs. actual</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>weekly <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_predictions</span>(ma, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> weekyr, <span class="at">y =</span> ndoses)) <span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> weekyr, <span class="at">y =</span> pred), </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#377eb8"</span>) <span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="sc">~</span> </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">format</span>(.x, <span class="at">scientific =</span> <span class="cn">FALSE</span>)) <span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year and Week"</span>, <span class="at">y =</span> <span class="st">"Number of doses"</span>) <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Observed and model predicted counts"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="power-aim2_files/figure-html/dpred-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Not bad! This model seems pretty reasonable for capturing the seasonal nature of vaccination data, so we will use these harmonic parameters to simulate data that we can experiment on to estimate our power.</p>
+</section>
+<section id="simulating-actual-data" class="level2">
+<h2 class="anchored" data-anchor-id="simulating-actual-data">Simulating actual data</h2>
+<p>Let’s start by trying to recreate the Michigan data for 2020 and 2021. As noted above the Dashboard data did not include denominators, but we have done so here, approximating the Michigan population of around 9-10 million with some slow growth over time. We also, for the time being, ignore any overall trend in vaccinations over time to focus in on being able to capture the seasonality.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set seed for reproducibility</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20230926</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="do">## simulated data for same 2-year period</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>tib <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">week =</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">1</span>, <span class="at">to =</span> <span class="dv">52</span>, <span class="at">by =</span><span class="dv">1</span>), <span class="dv">2</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="fu">rep</span>(<span class="dv">2020</span><span class="sc">:</span><span class="dv">2021</span>, <span class="at">each =</span> <span class="dv">52</span>),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">time =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">1</span>, <span class="at">to=</span><span class="fu">length</span>(week), <span class="at">by =</span> <span class="dv">1</span>),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">post =</span> <span class="fu">if_else</span>(year <span class="sc">&gt;=</span> <span class="dv">2021</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">tsince =</span> <span class="fu">if_else</span>(post<span class="sc">==</span><span class="dv">1</span>, time <span class="sc">-</span> <span class="dv">52</span>, <span class="dv">0</span>),</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">u_x =</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(week)),</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># estimate = ifelse(post == 1, time - min(time), 0),</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">pop100 =</span> <span class="dv">90000</span> <span class="sc">+</span> (<span class="dv">900000</span> <span class="sc">*</span> <span class="fl">0.00025</span> <span class="sc">*</span> time)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda =</span> <span class="dv">9</span> <span class="sc">+</span> (<span class="fl">0.00</span> <span class="sc">*</span> time) <span class="sc">+</span> (<span class="dv">0</span> <span class="sc">*</span> post) <span class="sc">+</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span> <span class="sc">*</span> post <span class="sc">*</span> tsince) <span class="sc">+</span> </span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span><span class="fl">1.9</span> <span class="sc">*</span> <span class="fu">sin</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> week <span class="sc">/</span> <span class="fl">52.25</span>) <span class="sc">+</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>      <span class="fl">0.38</span> <span class="sc">*</span> <span class="fu">sin</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> <span class="dv">2</span> <span class="sc">*</span> week <span class="sc">/</span> <span class="fl">52.25</span>) <span class="sc">+</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>      <span class="fl">2.65</span> <span class="sc">*</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> week <span class="sc">/</span> <span class="fl">52.25</span>) <span class="sc">+</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span><span class="fl">1.28</span> <span class="sc">*</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> <span class="dv">2</span> <span class="sc">*</span> week <span class="sc">/</span> <span class="fl">52.25</span>) <span class="sc">+</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>      <span class="fl">0.25</span> <span class="sc">*</span> u_x,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda_o =</span> <span class="fu">exp</span>((lambda <span class="sc">-</span> <span class="fl">11.5</span>) <span class="sc">+</span> <span class="fu">log</span>(pop100)),</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">doses =</span> <span class="fu">rpois</span>(<span class="fu">length</span>(week), <span class="fu">exp</span>(lambda)),</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">doses2 =</span> <span class="fu">rpois</span>(<span class="fu">length</span>(week), lambda_o),</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">rate =</span> doses <span class="sc">/</span> pop100)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(tib, <span class="at">n =</span> <span class="dv">10</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> week </th>
+   <th style="text-align:right;"> year </th>
+   <th style="text-align:right;"> time </th>
+   <th style="text-align:right;"> post </th>
+   <th style="text-align:right;"> tsince </th>
+   <th style="text-align:right;"> u_x </th>
+   <th style="text-align:right;"> pop100 </th>
+   <th style="text-align:right;"> lambda </th>
+   <th style="text-align:right;"> lambda_o </th>
+   <th style="text-align:right;"> doses </th>
+   <th style="text-align:right;"> doses2 </th>
+   <th style="text-align:right;"> rate </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> -0.2685856 </td>
+   <td style="text-align:right;"> 90225 </td>
+   <td style="text-align:right;"> 10.183141 </td>
+   <td style="text-align:right;"> 24178.120 </td>
+   <td style="text-align:right;"> 26509 </td>
+   <td style="text-align:right;"> 24137 </td>
+   <td style="text-align:right;"> 0.2938099 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0756831 </td>
+   <td style="text-align:right;"> 90450 </td>
+   <td style="text-align:right;"> 10.181142 </td>
+   <td style="text-align:right;"> 24189.990 </td>
+   <td style="text-align:right;"> 26250 </td>
+   <td style="text-align:right;"> 24101 </td>
+   <td style="text-align:right;"> 0.2902156 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> -0.3798935 </td>
+   <td style="text-align:right;"> 90675 </td>
+   <td style="text-align:right;"> 10.003745 </td>
+   <td style="text-align:right;"> 20308.236 </td>
+   <td style="text-align:right;"> 22117 </td>
+   <td style="text-align:right;"> 20077 </td>
+   <td style="text-align:right;"> 0.2439151 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> -0.5344829 </td>
+   <td style="text-align:right;"> 90900 </td>
+   <td style="text-align:right;"> 9.916343 </td>
+   <td style="text-align:right;"> 18654.794 </td>
+   <td style="text-align:right;"> 20196 </td>
+   <td style="text-align:right;"> 18554 </td>
+   <td style="text-align:right;"> 0.2221782 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> -0.6614896 </td>
+   <td style="text-align:right;"> 91125 </td>
+   <td style="text-align:right;"> 9.838794 </td>
+   <td style="text-align:right;"> 17305.534 </td>
+   <td style="text-align:right;"> 18648 </td>
+   <td style="text-align:right;"> 17477 </td>
+   <td style="text-align:right;"> 0.2046420 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0795638 </td>
+   <td style="text-align:right;"> 91350 </td>
+   <td style="text-align:right;"> 9.968340 </td>
+   <td style="text-align:right;"> 19747.722 </td>
+   <td style="text-align:right;"> 21352 </td>
+   <td style="text-align:right;"> 19487 </td>
+   <td style="text-align:right;"> 0.2337384 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> -0.7327040 </td>
+   <td style="text-align:right;"> 91575 </td>
+   <td style="text-align:right;"> 9.686637 </td>
+   <td style="text-align:right;"> 14936.315 </td>
+   <td style="text-align:right;"> 16061 </td>
+   <td style="text-align:right;"> 15003 </td>
+   <td style="text-align:right;"> 0.1753863 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.0443146 </td>
+   <td style="text-align:right;"> 91800 </td>
+   <td style="text-align:right;"> 10.017202 </td>
+   <td style="text-align:right;"> 20838.749 </td>
+   <td style="text-align:right;"> 22282 </td>
+   <td style="text-align:right;"> 20742 </td>
+   <td style="text-align:right;"> 0.2427233 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> -1.5221852 </td>
+   <td style="text-align:right;"> 92025 </td>
+   <td style="text-align:right;"> 9.216498 </td>
+   <td style="text-align:right;"> 9379.796 </td>
+   <td style="text-align:right;"> 9934 </td>
+   <td style="text-align:right;"> 9263 </td>
+   <td style="text-align:right;"> 0.1079489 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:right;"> 2020 </td>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.5112006 </td>
+   <td style="text-align:right;"> 92250 </td>
+   <td style="text-align:right;"> 9.512680 </td>
+   <td style="text-align:right;"> 12643.998 </td>
+   <td style="text-align:right;"> 13649 </td>
+   <td style="text-align:right;"> 12609 </td>
+   <td style="text-align:right;"> 0.1479566 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>Now we can fit a similar model to our simulated data and compare with the actual data to see how things shape up. We’ll do the same check for overdispersion, which we tried to simulate as well. Below is a table that compares the actual Michigan data for 2020-2021 with our simulated dataset.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ms <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses <span class="sc">~</span> post <span class="sc">+</span> time <span class="sc">+</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">harmonic</span>(week, <span class="dv">2</span>, <span class="fl">52.25</span>), </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> poisson, <span class="at">data=</span>tib)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">check_overdispersion</span>(ms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># Overdispersion test
+
+       dispersion ratio =   3692.509
+  Pearson's Chi-Squared = 358173.384
+                p-value =    &lt; 0.001</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># comparison of count models for actual vs.</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># simulated data</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"Observed"</span> <span class="ot">=</span> ma, <span class="st">"Simulated"</span> <span class="ot">=</span> ms,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Observed"</span> <span class="ot">=</span> ma, <span class="st">"Simulated"</span> <span class="ot">=</span> ms),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">vcov =</span> <span class="fu">list</span>(<span class="st">"iid"</span>, <span class="st">"iid"</span>, <span class="st">"HC3"</span>, <span class="st">"HC3"</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_omit =</span> <span class="st">".*"</span>, <span class="at">output =</span> <span class="st">"kableExtra"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>(<span class="fu">c</span>(<span class="st">" "</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="st">"Conventional SE"</span> <span class="ot">=</span> <span class="dv">2</span>, </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Robust SE"</span> <span class="ot">=</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Conventional SE</div></th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Robust SE</div></th>
+</tr>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:center;"> Observed </th>
+   <th style="text-align:center;"> Simulated </th>
+   <th style="text-align:center;"> Observed  </th>
+   <th style="text-align:center;"> Simulated  </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:center;"> 9.329 </td>
+   <td style="text-align:center;"> 9.200 </td>
+   <td style="text-align:center;"> 9.329 </td>
+   <td style="text-align:center;"> 9.200 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.003) </td>
+   <td style="text-align:center;"> (0.003) </td>
+   <td style="text-align:center;"> (0.220) </td>
+   <td style="text-align:center;"> (0.161) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> post </td>
+   <td style="text-align:center;"> −0.171 </td>
+   <td style="text-align:center;"> 0.233 </td>
+   <td style="text-align:center;"> −0.171 </td>
+   <td style="text-align:center;"> 0.233 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.004) </td>
+   <td style="text-align:center;"> (0.004) </td>
+   <td style="text-align:center;"> (0.301) </td>
+   <td style="text-align:center;"> (0.264) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> time </td>
+   <td style="text-align:center;"> 0.001 </td>
+   <td style="text-align:center;"> −0.005 </td>
+   <td style="text-align:center;"> 0.001 </td>
+   <td style="text-align:center;"> −0.005 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.000) </td>
+   <td style="text-align:center;"> (0.000) </td>
+   <td style="text-align:center;"> (0.006) </td>
+   <td style="text-align:center;"> (0.005) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)1 </td>
+   <td style="text-align:center;"> −1.903 </td>
+   <td style="text-align:center;"> −1.854 </td>
+   <td style="text-align:center;"> −1.903 </td>
+   <td style="text-align:center;"> −1.854 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.097) </td>
+   <td style="text-align:center;"> (0.087) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)2 </td>
+   <td style="text-align:center;"> 0.376 </td>
+   <td style="text-align:center;"> 0.214 </td>
+   <td style="text-align:center;"> 0.376 </td>
+   <td style="text-align:center;"> 0.214 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.115) </td>
+   <td style="text-align:center;"> (0.125) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)3 </td>
+   <td style="text-align:center;"> 2.650 </td>
+   <td style="text-align:center;"> 2.512 </td>
+   <td style="text-align:center;"> 2.650 </td>
+   <td style="text-align:center;"> 2.512 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.003) </td>
+   <td style="text-align:center;"> (0.003) </td>
+   <td style="text-align:center;"> (0.175) </td>
+   <td style="text-align:center;"> (0.140) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)4 </td>
+   <td style="text-align:center;"> −1.276 </td>
+   <td style="text-align:center;"> −1.253 </td>
+   <td style="text-align:center;"> −1.276 </td>
+   <td style="text-align:center;"> −1.253 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.001) </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.093) </td>
+   <td style="text-align:center;"> (0.098) </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>As expected, we have also created data that are seasonally overdispersed. The coefficients and standard errors for the harmonic terms are reasonably similar.</p>
+<p>Because we have denominators in our simulated dataset, we can run a Poisson model that is likely to be more similar to what we will estimate in practice, so we include the log of the population as an offset term, so we can parameterize this model with the vaccine <em>rate</em> rather than the number of doses as the outcome.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model including offset</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mso <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> post <span class="sc">+</span> time <span class="sc">+</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">harmonic</span>(week, <span class="dv">2</span>, <span class="fl">52.25</span>) <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(pop100)), </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> poisson, <span class="at">data=</span>tib)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"Conventional SE"</span> <span class="ot">=</span> mso,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Robust SE"</span> <span class="ot">=</span> mso),</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">vcov =</span> <span class="fu">list</span>(<span class="st">"iid"</span>, <span class="st">"HC3"</span>),</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">gof_omit =</span> <span class="st">".*"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:center;"> Conventional SE </th>
+   <th style="text-align:center;"> Robust SE </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:center;"> −2.272 </td>
+   <td style="text-align:center;"> −2.272 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.003) </td>
+   <td style="text-align:center;"> (0.164) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> post </td>
+   <td style="text-align:center;"> 0.250 </td>
+   <td style="text-align:center;"> 0.250 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.004) </td>
+   <td style="text-align:center;"> (0.265) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> time </td>
+   <td style="text-align:center;"> −0.005 </td>
+   <td style="text-align:center;"> −0.005 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.000) </td>
+   <td style="text-align:center;"> (0.005) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)1 </td>
+   <td style="text-align:center;"> −1.853 </td>
+   <td style="text-align:center;"> −1.853 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.087) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)2 </td>
+   <td style="text-align:center;"> 0.199 </td>
+   <td style="text-align:center;"> 0.199 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.129) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)3 </td>
+   <td style="text-align:center;"> 2.482 </td>
+   <td style="text-align:center;"> 2.482 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.003) </td>
+   <td style="text-align:center;"> (0.142) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> harmonic(week, 2, 52.25)4 </td>
+   <td style="text-align:center;"> −1.236 </td>
+   <td style="text-align:center;"> −1.236 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.002) </td>
+   <td style="text-align:center;"> (0.100) </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>We note here that the rate parameterization does not affect any of the cofficients apart from the Intercept term, but it does allow us to generate predictions on the rate scale. Let’s visualize the simulated rates (in black) as well as our model predictions (in blue):</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>tib <span class="sc">%&gt;%</span> <span class="co"># filter(time&lt;105) %&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yw =</span> <span class="fu">make_yearweek</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> year, <span class="at">week=</span> week),</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">pop100 =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">add_predictions</span>(mso, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> yw, <span class="at">y =</span> rate)) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span>  </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> yw, <span class="at">y =</span> pred), </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">"#377eb8"</span>) <span class="sc">+</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year and Week"</span>, <span class="at">y =</span> <span class="st">"Vaccinated (%)"</span>) <span class="sc">+</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Simulated and model predicted rates"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="power-aim2_files/figure-html/simmodplot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This looks pretty reasonable. We can also compare our simulated data with the actual Michigan data to see how well we did:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># comparison of observed and simulated data</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>weekly <span class="sc">%&gt;%</span> <span class="fu">select</span>(time,ndoses) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">doses =</span> ndoses) <span class="sc">%&gt;%</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> <span class="st">"Observed"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(tib <span class="sc">%&gt;%</span> </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">select</span>(time, doses) <span class="sc">%&gt;%</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>              <span class="fu">mutate</span>(<span class="at">type =</span> <span class="st">"Simulated"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> doses, </span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> type, <span class="at">group =</span> type)) <span class="sc">+</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="st">"Data"</span>, </span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#377eb8"</span>, <span class="st">"#e41a1c"</span>)) <span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="sc">~</span> </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">format</span>(.x, <span class="at">scientific =</span> <span class="cn">FALSE</span>)) <span class="sc">+</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Time"</span>, <span class="at">y =</span> <span class="st">"Number of doses"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="power-aim2_files/figure-html/simobs-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="simulating-plausible-data" class="level2">
+<h2 class="anchored" data-anchor-id="simulating-plausible-data">Simulating plausible data</h2>
+<p>Now that we have the basic idea for simulating what our data may look like, it’s time to work on the power analysis. The first thing to do is to create a new set of fake data, but this time we will generate 6 years of data and create an intervention that will start in October of 2020.</p>
+<p>We will start by creating a function to create fake data and allows us to choose the magnitude of the treatment effect we want to estimate, essentially by allowing us to vary the magnitude of the coefficients on time, post and (potentially) the time*post term that would also allow for a change in slope after the intervention. For the time being, let’s focus on the change in vaccinations just after the policy is implemented, i.e., the <code>post</code> term in our regression models.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create function to make fake dataset</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>make_data <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">b1 =</span> <span class="dv">0</span>, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">b2 =</span> <span class="dv">0</span>, <span class="at">b3 =</span> <span class="dv">0</span>) {</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">week =</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">1</span>, <span class="at">to =</span> <span class="dv">52</span>, <span class="at">by =</span><span class="dv">1</span>), <span class="dv">6</span>),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">rep</span>(<span class="dv">2017</span><span class="sc">:</span><span class="dv">2022</span>, <span class="at">each =</span> <span class="dv">52</span>),</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">time =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">1</span>, <span class="at">to=</span><span class="fu">length</span>(week), <span class="at">by =</span> <span class="dv">1</span>),</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">post =</span> <span class="fu">if_else</span>(time <span class="sc">&gt;</span> <span class="dv">196</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">tsince =</span> <span class="fu">if_else</span>(post<span class="sc">==</span><span class="dv">1</span>, time <span class="sc">-</span> <span class="dv">196</span>, <span class="dv">0</span>),</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">post_tsince =</span> post <span class="sc">*</span> tsince,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">u_x =</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(week)),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">pop100 =</span> <span class="dv">90000</span> <span class="sc">+</span> (<span class="dv">900000</span> <span class="sc">*</span> <span class="fl">0.00005</span> <span class="sc">*</span> time)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda =</span> <span class="dv">9</span> <span class="sc">+</span> (b1 <span class="sc">*</span> time) <span class="sc">+</span> (b2 <span class="sc">*</span> post) <span class="sc">+</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    (b3 <span class="sc">*</span> post_tsince) <span class="sc">+</span> </span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span><span class="fl">1.9</span> <span class="sc">*</span> <span class="fu">sin</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> week <span class="sc">/</span> <span class="fl">52.25</span>) <span class="sc">+</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>      <span class="fl">0.38</span> <span class="sc">*</span> <span class="fu">sin</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> <span class="dv">2</span> <span class="sc">*</span> week <span class="sc">/</span> <span class="fl">52.25</span>) <span class="sc">+</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>      <span class="fl">2.65</span> <span class="sc">*</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> week <span class="sc">/</span> <span class="fl">52.25</span>) <span class="sc">+</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span><span class="fl">1.28</span> <span class="sc">*</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> <span class="dv">2</span> <span class="sc">*</span> week <span class="sc">/</span> <span class="fl">52.25</span>) <span class="sc">+</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>      <span class="fl">0.25</span> <span class="sc">*</span> u_x,</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">lambda_o =</span> <span class="fu">exp</span>((lambda <span class="sc">-</span> <span class="fl">11.5</span>) <span class="sc">+</span> <span class="fu">log</span>(pop100)),</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">doses =</span> <span class="fu">rpois</span>(<span class="fu">length</span>(week), <span class="fu">exp</span>(lambda)),</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">doses2 =</span> <span class="fu">rpois</span>(<span class="fu">length</span>(week), lambda_o),</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">rate =</span> doses <span class="sc">/</span> pop100)</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="co"># make dataset</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(<span class="at">b1 =</span> <span class="dv">0</span>, <span class="at">b2 =</span> <span class="dv">0</span>, <span class="at">b3 =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The code above created a fake dataset with no treatment effect for any of our model terms, but does allow for seasonality. Here is a plot of our simulated data. The vertical line indicates when the intervention took place, and we can see that fitting simple linear slopes to the pre and post period is consistent with no impact of this intervention, which is what we should get since we set it up that way.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># simple plot of time series</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> rate)) <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">196</span>, </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>   <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"gray60"</span>) <span class="sc">+</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Weekly vaccination rate (%)"</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Weeks since 2017"</span>) <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> rate), </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span><span class="fu">subset</span>(data, post<span class="sc">==</span><span class="dv">0</span>), <span class="at">method=</span><span class="st">"lm"</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#377eb8"</span>) <span class="sc">+</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> rate), </span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span><span class="fu">subset</span>(data, post<span class="sc">==</span><span class="dv">1</span>), <span class="at">method=</span><span class="st">"lm"</span>,</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#e41a1c"</span>) <span class="sc">+</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="power-aim2_files/figure-html/fakeplot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="simulating-power" class="level2">
+<h2 class="anchored" data-anchor-id="simulating-power">Simulating power</h2>
+<p>Making up fake data is only the first step in simulating for power. Using a single fake dataset doesn’t tell us much about sampling variation, so the basic idea now is to iterate, many times, the actual process we will use to analyze our data, and see how the resulting coefficients and power change across many iterations.</p>
+<p>So the basic process now is to do the following, over many iterations: 1) recreate our fake data; 2) estimate our model; 3) grab the results (coefficients, standard errors, p-values); and 4) summarize. Let’s do this initially for a simulated dataset where we know the true parameter on <code>post</code> is 0. The code below does exactly that, 2000 times, so we can see how our coefficient of interest varies across simulations.</p>
+<div class="cell" data-hash="power-aim2_cache/html/simzero_abc41f997d3be9238e2aefe973d1dcb1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set up objects to collect our results</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>coef_results <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>sig_results <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># use 2000 iterations</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2000</span>) {</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># re-create the data</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(<span class="at">b1=</span><span class="dv">0</span>, <span class="at">b2=</span><span class="dv">0</span>, <span class="at">b3=</span><span class="dv">0</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run the analysis</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> post <span class="sc">+</span> time <span class="sc">+</span> post_tsince <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">harmonic</span>(week, <span class="dv">2</span>, <span class="fl">52.25</span>) <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(pop100)), </span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> poisson, <span class="at">data=</span>data)</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get the results</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># use robust SEs</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  tmod <span class="ot">&lt;-</span> <span class="fu">tidy</span>(<span class="fu">coeftest</span>(mod, <span class="at">vcov =</span> vcovHC))</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  coef_results[i] <span class="ot">&lt;-</span> tmod<span class="sc">$</span>estimate[<span class="dv">2</span>]</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  sig_results[i] <span class="ot">&lt;-</span> tmod<span class="sc">$</span>p.value[<span class="dv">2</span>] <span class="sc">&lt;=</span> .<span class="dv">05</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We can put those results into a dataframe to easily summarize. Let’s look at the plot of our estimated coefficient on <code>post</code> over our 2000 simulations:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>results_tib <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">coef =</span> coef_results,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">sig =</span> sig_results)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(results_tib, <span class="fu">aes</span>(<span class="at">x =</span> coef)) <span class="sc">+</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span>   <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">'Coefficient'</span>, <span class="at">y =</span> <span class="st">'Density'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="power-aim2_files/figure-html/simresult-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see that the coefficient is centered on 0, just as we designed it. We can also ask how often the p-value on that coefficient was &lt;0.05 over all of the simulations. Recall that power is the probability of rejecting the null when the effect is truly null. We conventionally set alpha as 0.05, meaning that even when the effect is actually 0, we should still expect to get ‘significant’ results around 5% of the time.</p>
+<p>We can use the frequency of ‘significant’ p-values to estimate our power in this way. For the prior analysis, where we set the coefficient on <code>post</code> to be 0, we should see around 5% of p-values with a value of &lt;0.05.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>results_tib <span class="sc">%&gt;%</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_coef =</span> <span class="fu">mean</span>(coef), </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">power =</span> <span class="fu">mean</span>(sig)) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>() <span class="sc">%&gt;%</span> <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> mean_coef </th>
+   <th style="text-align:right;"> power </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> -0.0010075 </td>
+   <td style="text-align:right;"> 0.059 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>We can see that around 6% of our simulations had a p-value less than 0.05, so this seems like the simulation is working well. Now we can move on to seeing how our power changes with different effect sizes. The code below just includes a function to allow us to do our simulated power analysis for a range of different effect sizes.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function to test different effect sizes</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>post_power <span class="ot">&lt;-</span> <span class="cf">function</span>(effect) {</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># empty object to hold power values</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  sig_results <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">500</span>) {</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># re-create simulated data</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(<span class="at">b1=</span><span class="dv">0</span>,<span class="at">b2=</span>effect,<span class="at">b3=</span><span class="dv">0</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Run the analysis</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> post <span class="sc">+</span> time <span class="sc">+</span> post_tsince <span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">harmonic</span>(week, <span class="dv">2</span>, <span class="fl">52.25</span>) <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(pop100)), </span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> poisson, <span class="at">data=</span>data)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get the results</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># use robust SEs</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  tmod <span class="ot">&lt;-</span> <span class="fu">tidy</span>(<span class="fu">coeftest</span>(mod, <span class="at">vcov =</span> vcovHC))</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  sig_results[i] <span class="ot">&lt;-</span> tmod<span class="sc">$</span>p.value[<span class="dv">2</span>] <span class="sc">&lt;=</span> .<span class="dv">05</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  sig_results <span class="sc">%&gt;%</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mean</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>()</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now we will run our simulations for effect sizes in the plausible range. Recall that for a Poisson model on the log scale, these coefficients represent the percentage change in the vaccination rate after the intervention. Let’s try coefficients that range from 0 to a 50% increase in vaccination rates, i.e., we will test the following coefficients for <code>post</code>: <code>{0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5}</code></p>
+<div class="cell" data-hash="power-aim2_cache/html/simeffeccts_78ec7d7c2c43f7f70b3fa07b49150750">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now try different effect sizes</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>power_levels <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>effects <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  power_levels[i] <span class="ot">&lt;-</span> <span class="fu">post_power</span>(effects[i])</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Where do we cross 80%?</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>power_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">effect =</span> effects,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>                        <span class="at">power =</span> power_levels)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="fu">kbl</span>(power_results) <span class="sc">%&gt;%</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> effect </th>
+   <th style="text-align:right;"> power </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 0.00 </td>
+   <td style="text-align:right;"> 0.052 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0.05 </td>
+   <td style="text-align:right;"> 0.090 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0.10 </td>
+   <td style="text-align:right;"> 0.192 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0.20 </td>
+   <td style="text-align:right;"> 0.518 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0.30 </td>
+   <td style="text-align:right;"> 0.822 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0.40 </td>
+   <td style="text-align:right;"> 0.962 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0.50 </td>
+   <td style="text-align:right;"> 0.998 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>The table shows, as expected, that our power increased with larger effect sizes. With our simulated data under these assumptions we will have &gt;80% power to detect a 30% change in vaccination rates following the intervention. What would a 30% change look like? We can make a simple plot.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(<span class="at">b2 =</span> <span class="fl">0.3</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> post <span class="sc">+</span> time <span class="sc">+</span> post_tsince <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">harmonic</span>(week, <span class="dv">2</span>, <span class="fl">52.25</span>) <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(pop100)), </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> poisson, <span class="at">data=</span>data)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pop100 =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_predictions</span>(mod, <span class="at">type =</span> <span class="st">"response"</span>) </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">%&gt;%</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> rate)) <span class="sc">+</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"gray60"</span>) <span class="sc">+</span> </span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"gray60"</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> pred), </span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span><span class="fu">subset</span>(p1, post<span class="sc">==</span><span class="dv">0</span>), <span class="at">color =</span> <span class="st">"#377eb8"</span>) <span class="sc">+</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> pred), </span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span><span class="fu">subset</span>(p1, post<span class="sc">==</span><span class="dv">0</span>), <span class="at">color =</span> <span class="st">"#377eb8"</span>,</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">'lm'</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> pred), </span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span><span class="fu">subset</span>(p1, post<span class="sc">==</span><span class="dv">1</span>), <span class="at">color =</span> <span class="st">"#e41a1c"</span>) <span class="sc">+</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> pred), </span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span><span class="fu">subset</span>(p1, post<span class="sc">==</span><span class="dv">1</span>), <span class="at">color =</span> <span class="st">"#e41a1c"</span>,</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">'lm'</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year and Week"</span>, <span class="at">y =</span> <span class="st">"Vaccinated (%)"</span>) <span class="sc">+</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Simulated and model predicted rates if `post` = 0.3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="power-aim2_files/figure-html/sim03-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
