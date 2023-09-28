@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sam Harper">
-<meta name="dcterms.date" content="2023-09-26">
+<meta name="dcterms.date" content="2023-09-28">
 
 <title>Power for Aim 2</title>
 <style>
@@ -130,7 +130,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 26, 2023</p>
+      <p class="date">September 28, 2023</p>
     </div>
   </div>
   
@@ -1152,7 +1152,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="simulating-power">Simulating power</h2>
 <p>Making up fake data is only the first step in simulating for power. Using a single fake dataset doesn’t tell us much about sampling variation, so the basic idea now is to iterate, many times, the actual process we will use to analyze our data, and see how the resulting coefficients and power change across many iterations.</p>
 <p>So the basic process now is to do the following, over many iterations: 1) recreate our fake data; 2) estimate our model; 3) grab the results (coefficients, standard errors, p-values); and 4) summarize. Let’s do this initially for a simulated dataset where we know the true parameter on <code>post</code> is 0. The code below does exactly that, 2000 times, so we can see how our coefficient of interest varies across simulations.</p>
-<div class="cell" data-hash="power-aim2_cache/html/simzero_abc41f997d3be9238e2aefe973d1dcb1">
+<div class="cell" data-hash="power-aim2_cache/html/simzero_01d74bc7a679f27e733ebc750a320f1f">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set up objects to collect our results</span></span>
@@ -1165,15 +1165,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(<span class="at">b1=</span><span class="dv">0</span>, <span class="at">b2=</span><span class="dv">0</span>, <span class="at">b3=</span><span class="dv">0</span>)</span>
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run the analysis</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> post <span class="sc">+</span> time <span class="sc">+</span> post_tsince <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> time <span class="sc">+</span> post <span class="sc">+</span> post_tsince <span class="sc">+</span></span>
 <span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">harmonic</span>(week, <span class="dv">2</span>, <span class="fl">52.25</span>) <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(pop100)), </span>
 <span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> poisson, <span class="at">data=</span>data)</span>
 <span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get the results</span></span>
 <span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># use robust SEs</span></span>
 <span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  tmod <span class="ot">&lt;-</span> <span class="fu">tidy</span>(<span class="fu">coeftest</span>(mod, <span class="at">vcov =</span> vcovHC))</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  coef_results[i] <span class="ot">&lt;-</span> tmod<span class="sc">$</span>estimate[<span class="dv">2</span>]</span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  sig_results[i] <span class="ot">&lt;-</span> tmod<span class="sc">$</span>p.value[<span class="dv">2</span>] <span class="sc">&lt;=</span> .<span class="dv">05</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  coef_results[i] <span class="ot">&lt;-</span> tmod<span class="sc">$</span>estimate[<span class="dv">3</span>]</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  sig_results[i] <span class="ot">&lt;-</span> tmod<span class="sc">$</span>p.value[<span class="dv">3</span>] <span class="sc">&lt;=</span> .<span class="dv">05</span></span>
 <span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -1235,7 +1235,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(<span class="at">b1=</span><span class="dv">0</span>,<span class="at">b2=</span>effect,<span class="at">b3=</span><span class="dv">0</span>)</span>
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Run the analysis</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> post <span class="sc">+</span> time <span class="sc">+</span> post_tsince <span class="sc">+</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> time <span class="sc">+</span> post <span class="sc">+</span> post_tsince <span class="sc">+</span></span>
 <span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">harmonic</span>(week, <span class="dv">2</span>, <span class="fl">52.25</span>) <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(pop100)), </span>
 <span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> poisson, <span class="at">data=</span>data)</span>
 <span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  </span>
@@ -1243,7 +1243,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># use robust SEs</span></span>
 <span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  tmod <span class="ot">&lt;-</span> <span class="fu">tidy</span>(<span class="fu">coeftest</span>(mod, <span class="at">vcov =</span> vcovHC))</span>
 <span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  sig_results[i] <span class="ot">&lt;-</span> tmod<span class="sc">$</span>p.value[<span class="dv">2</span>] <span class="sc">&lt;=</span> .<span class="dv">05</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  sig_results[i] <span class="ot">&lt;-</span> tmod<span class="sc">$</span>p.value[<span class="dv">3</span>] <span class="sc">&lt;=</span> .<span class="dv">05</span></span>
 <span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  sig_results <span class="sc">%&gt;%</span></span>
@@ -1320,7 +1320,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(<span class="at">b2 =</span> <span class="fl">0.3</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> post <span class="sc">+</span> time <span class="sc">+</span> post_tsince <span class="sc">+</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(doses2 <span class="sc">~</span> time <span class="sc">+</span> post <span class="sc">+</span> post_tsince <span class="sc">+</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">harmonic</span>(week, <span class="dv">2</span>, <span class="fl">52.25</span>) <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(pop100)), </span>
 <span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> poisson, <span class="at">data=</span>data)</span>
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>

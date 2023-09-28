@@ -297,15 +297,15 @@ for (i in 1:2000) {
   data <- make_data(b1=0, b2=0, b3=0)
   
   # Run the analysis
-  mod <- glm(doses2 ~ post + time + post_tsince +
+  mod <- glm(doses2 ~ time + post + post_tsince +
     harmonic(week, 2, 52.25) + offset(log(pop100)), 
     family = poisson, data=data)
   
   # Get the results
   # use robust SEs
   tmod <- tidy(coeftest(mod, vcov = vcovHC))
-  coef_results[i] <- tmod$estimate[2]
-  sig_results[i] <- tmod$p.value[2] <= .05
+  coef_results[i] <- tmod$estimate[3]
+  sig_results[i] <- tmod$p.value[3] <= .05
 }
 ```
 
@@ -343,7 +343,7 @@ post_power <- function(effect) {
   data <- make_data(b1=0,b2=effect,b3=0)
   
     # Run the analysis
-  mod <- glm(doses2 ~ post + time + post_tsince +
+  mod <- glm(doses2 ~ time + post + post_tsince +
     harmonic(week, 2, 52.25) + offset(log(pop100)), 
     family = poisson, data=data)
   
@@ -351,7 +351,7 @@ post_power <- function(effect) {
   # use robust SEs
   tmod <- tidy(coeftest(mod, vcov = vcovHC))
 
-  sig_results[i] <- tmod$p.value[2] <= .05
+  sig_results[i] <- tmod$p.value[3] <= .05
     
   }
   sig_results %>%
@@ -384,7 +384,7 @@ The table shows, as expected, that our power increased with larger effect sizes.
 ```{r sim03, message = F}
 data <- make_data(b2 = 0.3)
 
-mod <- glm(doses2 ~ post + time + post_tsince +
+mod <- glm(doses2 ~ time + post + post_tsince +
     harmonic(week, 2, 52.25) + offset(log(pop100)), 
     family = poisson, data=data)
 
